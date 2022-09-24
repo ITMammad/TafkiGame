@@ -30,7 +30,7 @@ def showHowToWindow():
     howToWindow.geometry('%dx%d+%d+%d' % (500, 500, x, y))
     howToFrame = modernTKinter.Frame(howToWindow, padding=10)
     howToFrame.pack()
-    img = ImageTk.PhotoImage(Image.open(r"assets/img/howTo.png").resize((480, 480), Image.ANTIALIAS))
+    img = ImageTk.PhotoImage(Image.open(r"assets/img/howTo.png").resize((480, 480)))
     panel = modernTKinter.Label(howToFrame, image=img)
     panel.pack()
     howToWindow.resizable(False, False)
