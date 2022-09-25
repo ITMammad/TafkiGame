@@ -7,6 +7,7 @@ import tkinter.ttk as modernTKinter
 
 ashghal_one_comsDown_status = True
 ashghal_two_comsDown_status = True
+clock = pygame.time.Clock()
 ashghal_one_pos = [0, 0]
 ashghal_two_pos = [0, 0]
 ashghal_one_speed = 0
@@ -17,6 +18,7 @@ screen_width = 800
 running = True
 timer = 0
 score = 0
+fps = 120
 ashghalsT = [
     ["assets/ashghals/T/1.png", [50, 120]],
     ["assets/ashghals/T/2.png", [50, 127]],
@@ -95,6 +97,7 @@ def showMainWindow():
     def sel():
         selectedOption = var.get()
         if selectedOption == 1 or selectedOption == 2 or selectedOption == 3:
+            mainWindow.destroy()
             showGameWindow(selectedOption)
 
     var = tkinter.IntVar()
@@ -131,14 +134,7 @@ def showGameWindow(hardShip):
     global timer
     global score
 
-    if hardShip == 1:
-        speeds_array = [1, 4]
-    elif hardShip == 2:
-        speeds_array = [3, 7]
-    elif hardShip == 3:
-        speeds_array = [5, 9]
-    else:
-        speeds_array = [1, 4]
+    timer = hardShip * 15
 
     screen_height = monitor_height / 2 + 150
     screen_width = monitor_width / 2 + 250
@@ -207,7 +203,7 @@ def showGameWindow(hardShip):
             ashghalPic = pygame.image.load(ashghal[0])
             ashghalIMG = pygame.transform.scale(ashghalPic, (ashghal[1][1], ashghal[1][0]))
             ashghal_one_pos = [random.randint(0, screen_width - ashghal[1][0]), 0]
-            ashghal_one_speed = random.randint(speeds_array[0], speeds_array[1])
+            ashghal_one_speed = random.randint(hardShip, hardShip + 5)
             gameScreen.blit(ashghalIMG, (ashghal_one_pos[0], ashghal_two_pos[1]))
         else:
             ashghal_one_pos[1] += ashghal_one_speed
@@ -224,6 +220,7 @@ def showGameWindow(hardShip):
             move_satls()
 
             pygame.display.update()
+            clock.tick(fps)
 
             for event in pygame.event.get():
                 if event.type == pygame.locals.QUIT:
