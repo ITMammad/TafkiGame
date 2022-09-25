@@ -1,7 +1,49 @@
-import os
+import PIL
+import pygame
+import random
 import tkinter
+import pygame.locals
 import tkinter.ttk as modernTKinter
-from PIL import Image, ImageTk
+
+ashghal_one_comsDown_status = True
+ashghal_two_comsDown_status = True
+clock = pygame.time.Clock()
+ashghal_one_pos = [0, 0]
+ashghal_two_pos = [0, 0]
+ashghal_one_speed = 0
+monitor_height = 0
+monitor_width = 0
+screen_height = 515
+screen_width = 800
+running = True
+timer = 0
+score = 0
+fps = 120
+ashghalsT = [
+    ["assets/ashghals/T/1.png", [50, 120]],
+    ["assets/ashghals/T/2.png", [50, 127]],
+    ["assets/ashghals/T/3.png", [50, 114]],
+    ["assets/ashghals/T/4.png", [50, 61]],
+    ["assets/ashghals/T/5.png", [50, 51]],
+    ["assets/ashghals/T/6.png", [50, 79]],
+    ["assets/ashghals/T/7.png", [50, 30]],
+    ["assets/ashghals/T/8.png", [50, 43]],
+    ["assets/ashghals/T/9.png", [50, 79]],
+    ["assets/ashghals/T/10.png", [50, 26]],
+]
+ashghalsK = [
+    ["assets/ashghals/K/1.png", [50, 41]],
+    ["assets/ashghals/K/2.png", [50, 51]],
+    ["assets/ashghals/K/3png", [50, 116]],
+    ["assets/ashghals/K/4.png", [50, 49]],
+    ["assets/ashghals/K/5.png", [50, 31]],
+    ["assets/ashghals/K/6.png", [50, 48]],
+    ["assets/ashghals/K/7.png", [50, 57]],
+    ["assets/ashghals/K/8.png", [50, 87]],
+    ["assets/ashghals/K/9.png", [50, 27]],
+    ["assets/ashghals/K/10.png", [50, 73]],
+]
+ashghal_types = [ashghalsT, ashghalsK]
 
 def showAboutWindow():
     aboutWindow = tkinter.Tk()
@@ -30,19 +72,23 @@ def showHowToWindow():
     howToWindow.geometry('%dx%d+%d+%d' % (500, 500, x, y))
     howToFrame = modernTKinter.Frame(howToWindow, padding=10)
     howToFrame.pack()
-    img = ImageTk.PhotoImage(Image.open(r"assets/img/howTo.png").resize((480, 480)))
+    img = PIL.ImageTk.PhotoImage(PIL.Image.open(r"assets/img/howTo.png").resize((480, 480)))
     panel = modernTKinter.Label(howToFrame, image=img)
     panel.pack()
     howToWindow.resizable(False, False)
     howToWindow.mainloop()
 
 def showMainWindow():
+    global monitor_height
+    global monitor_width
     mainWindow = tkinter.Tk()
     mainWindow.title("TafkiGame")
     photo = tkinter.PhotoImage(file='assets/img/logo.png')
     mainWindow.iconphoto(True, photo)
     screen_width = mainWindow.winfo_screenwidth()
     screen_height = mainWindow.winfo_screenheight()
+    monitor_height = mainWindow.winfo_screenheight()
+    monitor_width = mainWindow.winfo_screenwidth()
     x = (screen_width / 2) - (350 / 2)
     y = (screen_height / 2) - (132.5 / 2)
     mainWindow.geometry('%dx%d+%d+%d' % (350, 132.5, x, y))
@@ -51,6 +97,7 @@ def showMainWindow():
     def sel():
         selectedOption = var.get()
         if selectedOption == 1 or selectedOption == 2 or selectedOption == 3:
+            mainWindow.destroy()
             showGameWindow(selectedOption)
 
     var = tkinter.IntVar()
@@ -70,7 +117,116 @@ def showMainWindow():
     mainWindow.mainloop()
 
 def showGameWindow(hardShip):
-    print(hardShip)
-    return None
+    global ashghal_one_comsDown_status
+    global ashghal_two_comsDown_status
+    global ashghal_one_speed
+    global ashghal_two_speed
+    global ashghal_one_pos
+    global ashghal_two_pos
+    global monitor_height
+    global monitor_width
+    global screen_height
+    global ashghal_types
+    global screen_width
+    global ashghalsT
+    global ashghalsK
+    global running
+    global timer
+    global score
+
+    timer = hardShip * 15
+
+    screen_height = monitor_height / 2 + 150
+    screen_width = monitor_width / 2 + 250
+
+    pygame.init()
+    gameScreen = pygame.display.set_mode((screen_width, screen_height))
+    pygame.display.set_caption('TafkiGame')
+    Icon = pygame.image.load('assets/img/logo.png')
+    pygame.display.set_icon(Icon)
+    bgPic = pygame.image.load("assets/img/bg.jpg")
+    bgIMG = pygame.transform.scale(bgPic, (screen_width, screen_height))
+    gameScreen.blit(bgIMG, (0, 0))
+
+    def makeScreenClear():
+        gameScreen.fill((255, 255, 255))
+        gameScreen.blit(bgIMG, (0, 0))
+
+    def playMusic():
+        pygame.mixer.music.load("assets/music/BG.wav")
+        pygame.mixer.music.play(-1)
+
+    def startCountDown():
+        font = pygame.font.Font("assets/font/IRANSans.ttf", 125)
+        count3 = font.render("3", True, (10, 10, 10))
+        count2 = font.render("2", True, (10, 10, 10))
+        count1 = font.render("1", True, (10, 10, 10))
+        go = font.render("!GO!", True, (10, 10, 10))
+        count3Rects = count3.get_rect(center = pygame.display.get_surface().get_rect().center)
+        count2Rects = count2.get_rect(center = pygame.display.get_surface().get_rect().center)
+        count1Rects = count1.get_rect(center = pygame.display.get_surface().get_rect().center)
+        goRects = go.get_rect(center = pygame.display.get_surface().get_rect().center)
+        gameScreen.blit(count3, count3Rects)
+        pygame.display.update()
+        pygame.time.delay(1000)
+        makeScreenClear()
+        gameScreen.blit(count2, count2Rects)
+        pygame.display.update()
+        pygame.time.delay(1000)
+        makeScreenClear()
+        gameScreen.blit(count1, count1Rects)
+        pygame.display.update()
+        pygame.time.delay(1000)
+        makeScreenClear()
+        gameScreen.blit(go, goRects)
+        pygame.display.update()
+        pygame.time.delay(2500)
+        makeScreenClear()
+
+    def move_ashghals():
+        global ashghal_one_comsDown_status
+        global ashghal_two_comsDown_status
+        global ashghal_one_speed
+        global ashghal_two_speed
+        global ashghal_one_pos
+        global ashghal_two_pos
+        global screen_height
+        global ashghal_types
+        global screen_width
+        global ashghalsT
+        global ashghalsK
+
+        if ashghal_one_comsDown_status:
+            ashghal_one_comsDown_status = False
+            ashghal_type = ashghal_types[random.randint(0, 1)]
+            ashghal = ashghal_type[random.randint(0, 9)]
+            ashghalPic = pygame.image.load(ashghal[0])
+            ashghalIMG = pygame.transform.scale(ashghalPic, (ashghal[1][1], ashghal[1][0]))
+            ashghal_one_pos = [random.randint(0, screen_width - ashghal[1][0]), 0]
+            ashghal_one_speed = random.randint(hardShip, hardShip + 5)
+            gameScreen.blit(ashghalIMG, (ashghal_one_pos[0], ashghal_two_pos[1]))
+        else:
+            ashghal_one_pos[1] += ashghal_one_speed
+
+    def move_satls():
+        return None
+
+    playMusic()
+    startCountDown()
+
+    while running:
+        if running:
+            move_ashghals()
+            move_satls()
+
+            pygame.display.update()
+            clock.tick(fps)
+
+            for event in pygame.event.get():
+                if event.type == pygame.locals.QUIT:
+                    running = False
+                    pygame.quit()
+        else:
+            pygame.quit()
 
 showMainWindow()
