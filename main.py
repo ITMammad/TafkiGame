@@ -1,8 +1,8 @@
-import PIL
 import pygame
 import random
 import tkinter
 import pygame.locals
+from PIL import Image, ImageTk
 import tkinter.ttk as modernTKinter
 
 ashghal_one_comsDown_status = True
@@ -11,14 +11,16 @@ clock = pygame.time.Clock()
 ashghal_one_pos = [0, 0]
 ashghal_two_pos = [0, 0]
 ashghal_one_speed = 0
+ashghal_two_speed = 0
 monitor_height = 0
 monitor_width = 0
 screen_height = 515
 screen_width = 800
+ashghalIMG = ""
 running = True
 timer = 0
 score = 0
-fps = 120
+fps = 10
 ashghalsT = [
     ["assets/ashghals/T/1.png", [50, 120]],
     ["assets/ashghals/T/2.png", [50, 127]],
@@ -34,7 +36,7 @@ ashghalsT = [
 ashghalsK = [
     ["assets/ashghals/K/1.png", [50, 41]],
     ["assets/ashghals/K/2.png", [50, 51]],
-    ["assets/ashghals/K/3png", [50, 116]],
+    ["assets/ashghals/K/3.png", [50, 116]],
     ["assets/ashghals/K/4.png", [50, 49]],
     ["assets/ashghals/K/5.png", [50, 31]],
     ["assets/ashghals/K/6.png", [50, 48]],
@@ -72,7 +74,7 @@ def showHowToWindow():
     howToWindow.geometry('%dx%d+%d+%d' % (500, 500, x, y))
     howToFrame = modernTKinter.Frame(howToWindow, padding=10)
     howToFrame.pack()
-    img = PIL.ImageTk.PhotoImage(PIL.Image.open(r"assets/img/howTo.png").resize((480, 480)))
+    img = ImageTk.PhotoImage(Image.open(r"assets/img/howTo.png").resize((480, 480)))
     panel = modernTKinter.Label(howToFrame, image=img)
     panel.pack()
     howToWindow.resizable(False, False)
@@ -193,20 +195,41 @@ def showGameWindow(hardShip):
         global screen_height
         global ashghal_types
         global screen_width
+        global ashghalIMG
         global ashghalsT
         global ashghalsK
 
         if ashghal_one_comsDown_status:
-            ashghal_one_comsDown_status = False
             ashghal_type = ashghal_types[random.randint(0, 1)]
             ashghal = ashghal_type[random.randint(0, 9)]
             ashghalPic = pygame.image.load(ashghal[0])
             ashghalIMG = pygame.transform.scale(ashghalPic, (ashghal[1][1], ashghal[1][0]))
             ashghal_one_pos = [random.randint(0, screen_width - ashghal[1][0]), 0]
-            ashghal_one_speed = random.randint(hardShip, hardShip + 5)
-            gameScreen.blit(ashghalIMG, (ashghal_one_pos[0], ashghal_two_pos[1]))
+            while ashghal_one_pos == ashghal_two_pos:
+                ashghal_one_pos = [random.randint(0, screen_width - ashghal[1][0]), 0]
+            ashghal_one_speed = random.randint(hardShip, hardShip + 4)
+            gameScreen.blit(ashghalIMG, (ashghal_one_pos[0], ashghal_one_pos[1]))
+            ashghal_one_comsDown_status = False
+            print(str(ashghal_one_speed))
         else:
+            makeScreenClear()
             ashghal_one_pos[1] += ashghal_one_speed
+            gameScreen.blit(ashghalIMG, (ashghal_one_pos[0], ashghal_one_pos[1]))
+            pygame.display.update()
+
+        # if ashghal_two_comsDown_status:
+        #     ashghal_type = ashghal_types[random.randint(0, 1)]
+        #     ashghal = ashghal_type[random.randint(0, 9)]
+        #     ashghalPic = pygame.image.load(ashghal[0])
+        #     ashghalIMG = pygame.transform.scale(ashghalPic, (ashghal[1][1], ashghal[1][0]))
+        #     ashghal_two_pos = [random.randint(0, screen_width - ashghal[1][0]), 0]
+        #     while ashghal_two_pos == ashghal_two_pos:
+        #         ashghal_two_pos = [random.randint(0, screen_width - ashghal[1][0]), 0]
+        #     ashghal_two_speed = random.randint(hardShip + 2, hardShip + 5)
+        #     gameScreen.blit(ashghalIMG, (ashghal_two_pos[0], ashghal_two_pos[1]))
+        #     ashghal_two_comsDown_status = False
+        # else:
+        #     ashghal_two_pos[1] += ashghal_two_speed
 
     def move_satls():
         return None
@@ -220,7 +243,7 @@ def showGameWindow(hardShip):
             move_satls()
 
             pygame.display.update()
-            clock.tick(fps)
+            # clock.tick(fps)
 
             for event in pygame.event.get():
                 if event.type == pygame.locals.QUIT:
