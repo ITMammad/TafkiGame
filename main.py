@@ -16,11 +16,36 @@ monitor_height = 0
 monitor_width = 0
 screen_height = 515
 screen_width = 800
+ashghal_one = []
+ashghal_two = []
 ashghalIMG = ""
 running = True
 timer = 0
 score = 0
 fps = 10
+speeds = [
+    [
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5
+    ],
+    [
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+        0.7
+    ],
+    [
+        0.5,
+        0.6,
+        0.7,
+        0.8,
+        0.9
+    ]
+]
 ashghalsT = [
     ["assets/ashghals/T/1.png", [50, 120]],
     ["assets/ashghals/T/2.png", [50, 127]],
@@ -195,41 +220,51 @@ def showGameWindow(hardShip):
         global screen_height
         global ashghal_types
         global screen_width
+        global ashghal_one
+        global ashghal_two
         global ashghalIMG
         global ashghalsT
         global ashghalsK
+        global speeds
 
         if ashghal_one_comsDown_status:
-            ashghal_type = ashghal_types[random.randint(0, 1)]
+            ashghal_type = ashghal_types[0]
             ashghal = ashghal_type[random.randint(0, 9)]
+            ashghal_one = ashghal
             ashghalPic = pygame.image.load(ashghal[0])
             ashghalIMG = pygame.transform.scale(ashghalPic, (ashghal[1][1], ashghal[1][0]))
             ashghal_one_pos = [random.randint(0, screen_width - ashghal[1][0]), 0]
             while ashghal_one_pos == ashghal_two_pos:
                 ashghal_one_pos = [random.randint(0, screen_width - ashghal[1][0]), 0]
-            ashghal_one_speed = random.randint(hardShip, hardShip + 4)
+            ashghal_one_speed = speeds[hardShip - 1][random.randint(0, 4)]
             gameScreen.blit(ashghalIMG, (ashghal_one_pos[0], ashghal_one_pos[1]))
             ashghal_one_comsDown_status = False
-            print(str(ashghal_one_speed))
+        else:
+            if not ashghal_one_pos[1] + ashghal_one[1][1] == screen_height:
+                makeScreenClear()
+                ashghal_one_pos[1] += ashghal_one_speed
+                gameScreen.blit(ashghalIMG, (ashghal_one_pos[0], ashghal_one_pos[1]))
+            else:
+                ashghal_one_comsDown_status = True
+                # check collision
+
+        if ashghal_two_comsDown_status:
+            ashghal_type = ashghal_types[1]
+            ashghal = ashghal_type[random.randint(0, 9)]
+            ashghalPic = pygame.image.load(ashghal[0])
+            ashghalIMG = pygame.transform.scale(ashghalPic, (ashghal[1][1], ashghal[1][0]))
+            ashghal_two_pos = [random.randint(0, screen_width - ashghal[1][0]), 0]
+            while ashghal_two_pos == ashghal_one_pos:
+                ashghal_two_pos = [random.randint(0, screen_width - ashghal[1][0]), 0]
+            ashghal_two_speed = speeds[hardShip - 1][random.randint(0, 4)]
+            gameScreen.blit(ashghalIMG, (ashghal_two_pos[0], ashghal_two_pos[1]))
+            ashghal_two_comsDown_status = False
         else:
             makeScreenClear()
-            ashghal_one_pos[1] += ashghal_one_speed
-            gameScreen.blit(ashghalIMG, (ashghal_one_pos[0], ashghal_one_pos[1]))
-            pygame.display.update()
+            ashghal_two_pos[1] += ashghal_two_speed
+            gameScreen.blit(ashghalIMG, (ashghal_two_pos[0], ashghal_two_pos[1]))
 
-        # if ashghal_two_comsDown_status:
-        #     ashghal_type = ashghal_types[random.randint(0, 1)]
-        #     ashghal = ashghal_type[random.randint(0, 9)]
-        #     ashghalPic = pygame.image.load(ashghal[0])
-        #     ashghalIMG = pygame.transform.scale(ashghalPic, (ashghal[1][1], ashghal[1][0]))
-        #     ashghal_two_pos = [random.randint(0, screen_width - ashghal[1][0]), 0]
-        #     while ashghal_two_pos == ashghal_two_pos:
-        #         ashghal_two_pos = [random.randint(0, screen_width - ashghal[1][0]), 0]
-        #     ashghal_two_speed = random.randint(hardShip + 2, hardShip + 5)
-        #     gameScreen.blit(ashghalIMG, (ashghal_two_pos[0], ashghal_two_pos[1]))
-        #     ashghal_two_comsDown_status = False
-        # else:
-        #     ashghal_two_pos[1] += ashghal_two_speed
+        pygame.display.update()
 
     def move_satls():
         return None
