@@ -123,11 +123,11 @@ def showGarbageInfoWindow():
     screen_width = garbageInfoWindow.winfo_screenwidth()
     screen_height = garbageInfoWindow.winfo_screenheight()
     x = (screen_width / 2) - (800 / 2)
-    y = (screen_height / 2) - (600 / 2)
-    garbageInfoWindow.geometry('%dx%d+%d+%d' % (800, 600, x, y))
+    y = (screen_height / 2) - (700 / 2)
+    garbageInfoWindow.geometry('%dx%d+%d+%d' % (800, 700, x, y))
     garbageInfoFrame = modernTKinter.Frame(garbageInfoWindow, padding=10)
     garbageInfoFrame.pack()
-    img = ImageTk.PhotoImage(Image.open(r"assets/img/garbageInfo.png").resize((780, 580)))
+    img = ImageTk.PhotoImage(Image.open(r"assets/img/garbageInfo.png").resize((780, 680)))
     panel = modernTKinter.Label(garbageInfoFrame, image=img)
     panel.pack()
     garbageInfoWindow.resizable(False, False)
@@ -400,6 +400,9 @@ def showGameWindow(hardShip):
         global score
 
         gameOverStatus = True
+        pygame.mixer.music.stop()
+        pygame.mixer.music.load("assets/music/GO.wav")
+        pygame.mixer.music.play()
         if score >= getBestScore():
             setBestScore()
         font = pygame.font.Font("assets/font/IRANSans.ttf", 35)
