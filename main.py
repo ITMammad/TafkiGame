@@ -5,20 +5,20 @@ import pygame.locals
 from PIL import Image, ImageTk
 import tkinter.ttk as modernTKinter
 
-ashghal_one_comsDown_status = True
-ashghal_two_comsDown_status = True
+garbage_one_comsDown_status = True
+garbage_two_comsDown_status = True
 clock = pygame.time.Clock()
-ashghal_one_pos = [0, 0]
-ashghal_two_pos = [0, 0]
+garbage_one_pos = [0, 0]
+garbage_two_pos = [0, 0]
 gameOverStatus = False
-ashghal_one_speed = 0
-ashghal_two_speed = 0
+garbage_one_speed = 0
+garbage_two_speed = 0
 monitor_height = 0
 monitor_width = 0
 screen_height = 0
 screen_width = 0
-ashghal_one = []
-ashghal_two = []
+garbage_one = []
+garbage_two = []
 start_ticks = 0
 satlsSpeed = 25
 running = True
@@ -49,36 +49,36 @@ speeds = [
         9
     ]
 ]
-ashghalsT = [
-    ["assets/ashghals/T/1.png", [50, 120]],
-    ["assets/ashghals/T/2.png", [50, 127]],
-    ["assets/ashghals/T/3.png", [50, 114]],
-    ["assets/ashghals/T/4.png", [50, 61]],
-    ["assets/ashghals/T/5.png", [50, 51]],
-    ["assets/ashghals/T/6.png", [50, 79]],
-    ["assets/ashghals/T/7.png", [50, 30]],
-    ["assets/ashghals/T/8.png", [50, 43]],
-    ["assets/ashghals/T/9.png", [50, 79]],
-    ["assets/ashghals/T/10.png", [50, 26]],
+garbagesT = [
+    ["assets/garbages/T/1.png", [50, 120]],
+    ["assets/garbages/T/2.png", [50, 127]],
+    ["assets/garbages/T/3.png", [50, 114]],
+    ["assets/garbages/T/4.png", [50, 61]],
+    ["assets/garbages/T/5.png", [50, 51]],
+    ["assets/garbages/T/6.png", [50, 79]],
+    ["assets/garbages/T/7.png", [50, 30]],
+    ["assets/garbages/T/8.png", [50, 43]],
+    ["assets/garbages/T/9.png", [50, 79]],
+    ["assets/garbages/T/10.png", [50, 26]],
 ]
-ashghalsK = [
-    ["assets/ashghals/K/1.png", [50, 41]],
-    ["assets/ashghals/K/2.png", [50, 51]],
-    ["assets/ashghals/K/3.png", [50, 47]],
-    ["assets/ashghals/K/4.png", [50, 49]],
-    ["assets/ashghals/K/5.png", [50, 31]],
-    ["assets/ashghals/K/6.png", [50, 48]],
-    ["assets/ashghals/K/7.png", [50, 57]],
-    ["assets/ashghals/K/8.png", [50, 87]],
-    ["assets/ashghals/K/9.png", [50, 27]],
-    ["assets/ashghals/K/10.png", [50, 73]],
+garbagesK = [
+    ["assets/garbages/K/1.png", [50, 41]],
+    ["assets/garbages/K/2.png", [50, 51]],
+    ["assets/garbages/K/3.png", [50, 47]],
+    ["assets/garbages/K/4.png", [50, 49]],
+    ["assets/garbages/K/5.png", [50, 31]],
+    ["assets/garbages/K/6.png", [50, 48]],
+    ["assets/garbages/K/7.png", [50, 57]],
+    ["assets/garbages/K/8.png", [50, 87]],
+    ["assets/garbages/K/9.png", [50, 27]],
+    ["assets/garbages/K/10.png", [50, 73]],
 ]
 color_of_score = [
     10,
     10,
     10
 ]
-ashghal_types = [ashghalsT, ashghalsK]
+garbage_types = [garbagesT, garbagesK]
 satlTPos = [0, screen_height - 200]
 satlKPos = [screen_width - 100, screen_height - 100]
 
@@ -172,21 +172,21 @@ def showMainWindow():
     mainWindow.mainloop()
 
 def showGameWindow(hardShip):
-    global ashghal_one_comsDown_status
-    global ashghal_two_comsDown_status
-    global ashghal_one_speed
-    global ashghal_two_speed
-    global ashghal_one_pos
-    global ashghal_two_pos
+    global garbage_one_comsDown_status
+    global garbage_two_comsDown_status
+    global garbage_one_speed
+    global garbage_two_speed
+    global garbage_one_pos
+    global garbage_two_pos
     global gameOverStatus
     global monitor_height
     global monitor_width
     global screen_height
-    global ashghal_types
+    global garbage_types
     global screen_width
     global start_ticks
-    global ashghalsT
-    global ashghalsK
+    global garbagesT
+    global garbagesK
     global leftTime
     global running
     global score
@@ -271,64 +271,64 @@ def showGameWindow(hardShip):
         pygame.time.delay(2500)
         makeScreenClear()
 
-    def move_ashghals():
-        global ashghal_one_comsDown_status
-        global ashghal_two_comsDown_status
-        global ashghal_one_speed
-        global ashghal_two_speed
-        global ashghal_one_pos
-        global ashghal_two_pos
-        global ashghal_types
+    def move_garbages():
+        global garbage_one_comsDown_status
+        global garbage_two_comsDown_status
+        global garbage_one_speed
+        global garbage_two_speed
+        global garbage_one_pos
+        global garbage_two_pos
+        global garbage_types
         global screen_height
         global screen_width
-        global ashghal_one
-        global ashghal_two
+        global garbage_one
+        global garbage_two
         global speeds
         global score
 
-        if ashghal_one_comsDown_status:
-            ashghal_one = ashghal_types[0][random.randint(0, 9)]
-            ashghalPic = pygame.image.load(ashghal_one[0])
-            ashghalIMG = pygame.transform.scale(ashghalPic, (ashghal_one[1][1], ashghal_one[1][0]))
-            ashghal_one_pos = [random.randint(0, screen_width - ashghal_one[1][0]), 0]
-            ashghal_one_speed = speeds[hardShip - 1][random.randint(0, 4)]
-            gameScreen.blit(ashghalIMG, (ashghal_one_pos[0], ashghal_one_pos[1]))
-            ashghal_one_comsDown_status = False
+        if garbage_one_comsDown_status:
+            garbage_one = garbage_types[0][random.randint(0, 9)]
+            garbagePic = pygame.image.load(garbage_one[0])
+            garbageIMG = pygame.transform.scale(garbagePic, (garbage_one[1][1], garbage_one[1][0]))
+            garbage_one_pos = [random.randint(0, screen_width - garbage_one[1][0]), 0]
+            garbage_one_speed = speeds[hardShip - 1][random.randint(0, 4)]
+            gameScreen.blit(garbageIMG, (garbage_one_pos[0], garbage_one_pos[1]))
+            garbage_one_comsDown_status = False
         elif check_collision(1):
-            ashghal_one_comsDown_status = True
-        elif ashghal_one_pos[1] + ashghal_one[1][1] >= screen_height:
+            garbage_one_comsDown_status = True
+        elif garbage_one_pos[1] + garbage_one[1][1] >= screen_height:
             score -= 1
-            ashghal_one_comsDown_status = True
+            garbage_one_comsDown_status = True
         else:
-            ashghal_one_pos[1] += ashghal_one_speed
-            ashghalPic = pygame.image.load(ashghal_one[0])
-            ashghalIMG = pygame.transform.scale(ashghalPic, (ashghal_one[1][1], ashghal_one[1][0]))
-            gameScreen.blit(ashghalIMG, (ashghal_one_pos[0], ashghal_one_pos[1]))
+            garbage_one_pos[1] += garbage_one_speed
+            garbagePic = pygame.image.load(garbage_one[0])
+            garbageIMG = pygame.transform.scale(garbagePic, (garbage_one[1][1], garbage_one[1][0]))
+            gameScreen.blit(garbageIMG, (garbage_one_pos[0], garbage_one_pos[1]))
 
-        if ashghal_two_comsDown_status:
-            ashghal_two = ashghal_types[1][random.randint(0, 9)]
-            while ashghal_two == ashghal_one:
-                ashghal_two = ashghal_types[0][random.randint(0, 9)]
-            ashghalPic = pygame.image.load(ashghal_two[0])
-            ashghalIMG = pygame.transform.scale(ashghalPic, (ashghal_two[1][1], ashghal_two[1][0]))
-            ashghal_two_pos = [random.randint(0, screen_width - ashghal_one[1][0]), 0]
-            while ashghal_two_pos == ashghal_one_pos:
-                ashghal_two_pos = [random.randint(0, screen_width - ashghal_one[1][0]), 0]
-            ashghal_two_speed = speeds[hardShip - 1][random.randint(0, 4)]
-            while ashghal_two_speed == ashghal_one_speed:
-                ashghal_two_speed = speeds[hardShip - 1][random.randint(0, 4)]
-            gameScreen.blit(ashghalIMG, (ashghal_two_pos[0], ashghal_two_pos[1]))
-            ashghal_two_comsDown_status = False
+        if garbage_two_comsDown_status:
+            garbage_two = garbage_types[1][random.randint(0, 9)]
+            while garbage_two == garbage_one:
+                garbage_two = garbage_types[0][random.randint(0, 9)]
+            garbagePic = pygame.image.load(garbage_two[0])
+            garbageIMG = pygame.transform.scale(garbagePic, (garbage_two[1][1], garbage_two[1][0]))
+            garbage_two_pos = [random.randint(0, screen_width - garbage_one[1][0]), 0]
+            while garbage_two_pos == garbage_one_pos:
+                garbage_two_pos = [random.randint(0, screen_width - garbage_one[1][0]), 0]
+            garbage_two_speed = speeds[hardShip - 1][random.randint(0, 4)]
+            while garbage_two_speed == garbage_one_speed:
+                garbage_two_speed = speeds[hardShip - 1][random.randint(0, 4)]
+            gameScreen.blit(garbageIMG, (garbage_two_pos[0], garbage_two_pos[1]))
+            garbage_two_comsDown_status = False
         elif check_collision(2):
-            ashghal_two_comsDown_status = True
-        elif ashghal_two_pos[1] + ashghal_two[1][1] >= screen_height:
+            garbage_two_comsDown_status = True
+        elif garbage_two_pos[1] + garbage_two[1][1] >= screen_height:
             score -= 1
-            ashghal_two_comsDown_status = True
+            garbage_two_comsDown_status = True
         else:
-            ashghal_two_pos[1] += ashghal_two_speed
-            ashghalPic = pygame.image.load(ashghal_two[0])
-            ashghalIMG = pygame.transform.scale(ashghalPic, (ashghal_two[1][1], ashghal_two[1][0]))
-            gameScreen.blit(ashghalIMG, (ashghal_two_pos[0], ashghal_two_pos[1]))
+            garbage_two_pos[1] += garbage_two_speed
+            garbagePic = pygame.image.load(garbage_two[0])
+            garbageIMG = pygame.transform.scale(garbagePic, (garbage_two[1][1], garbage_two[1][0]))
+            gameScreen.blit(garbageIMG, (garbage_two_pos[0], garbage_two_pos[1]))
 
     def move_satls():
         global satlTPos
@@ -353,19 +353,19 @@ def showGameWindow(hardShip):
         global score
 
         if t == 1:
-            if satlTPos[0] < ashghal_one_pos[0] < satlTPos[0] + 100 and satlTPos[1] < ashghal_one_pos[1] < satlTPos[1] + 75:
+            if satlTPos[0] < garbage_one_pos[0] < satlTPos[0] + 100 and satlTPos[1] < garbage_one_pos[1] < satlTPos[1] + 75:
                 score += 1
                 return True
-            elif satlKPos[0] < ashghal_one_pos[0] < satlKPos[0] + 100 and satlKPos[1] < ashghal_one_pos[1] < satlKPos[1] + 75:
+            elif satlKPos[0] < garbage_one_pos[0] < satlKPos[0] + 100 and satlKPos[1] < garbage_one_pos[1] < satlKPos[1] + 75:
                 score -= 1
                 return True
             else:
                 return False
         elif t == 2:
-            if satlKPos[0] < ashghal_two_pos[0] < satlKPos[0] + 100 and satlKPos[1] < ashghal_two_pos[1] < satlKPos[1] + 75:
+            if satlKPos[0] < garbage_two_pos[0] < satlKPos[0] + 100 and satlKPos[1] < garbage_two_pos[1] < satlKPos[1] + 75:
                 score += 1
                 return True
-            elif satlKPos[0] < ashghal_two_pos[0] < satlKPos[0] + 100 and satlKPos[1] < ashghal_two_pos[1] < satlKPos[1] + 75:
+            elif satlKPos[0] < garbage_two_pos[0] < satlKPos[0] + 100 and satlKPos[1] < garbage_two_pos[1] < satlKPos[1] + 75:
                 score -= 1
                 return True
             else:
@@ -420,7 +420,7 @@ def showGameWindow(hardShip):
         if not gameOverStatus:
             makeScreenClear()
             update_information()
-            move_ashghals()
+            move_garbages()
             move_satls()
 
             timer()
@@ -448,6 +448,7 @@ def showGameWindow(hardShip):
                 if event.type == pygame.locals.QUIT:
                     running = False
                     pygame.quit()
-            pygame.display.update()
+            if running:
+                pygame.display.update()
 
 showMainWindow()
