@@ -10,6 +10,7 @@ ashghal_two_comsDown_status = True
 clock = pygame.time.Clock()
 ashghal_one_pos = [0, 0]
 ashghal_two_pos = [0, 0]
+gameOverStatus = False
 ashghal_one_speed = 0
 ashghal_two_speed = 0
 monitor_height = 0
@@ -18,32 +19,34 @@ screen_height = 0
 screen_width = 0
 ashghal_one = []
 ashghal_two = []
+start_ticks = 0
 satlsSpeed = 25
 running = True
-timer = 0
+leftTime = 0
 score = 0
+time = 0
 fps = 40
 speeds = [
     [
-        0.25,
-        0.50,
-        0.75,
-        1.00,
-        1.25
+        1,
+        2,
+        3,
+        4,
+        5
     ],
     [
-        0.75,
-        1.00,
-        1.25,
-        1.50,
-        1.75
+        3,
+        4,
+        5,
+        6,
+        7
     ],
     [
-        1.25,
-        1.50,
-        1.75,
-        2.00,
-        2.25
+        5,
+        6,
+        7,
+        8,
+        9
     ]
 ]
 ashghalsT = [
@@ -69,6 +72,11 @@ ashghalsK = [
     ["assets/ashghals/K/8.png", [50, 87]],
     ["assets/ashghals/K/9.png", [50, 27]],
     ["assets/ashghals/K/10.png", [50, 73]],
+]
+color_of_score = [
+    10,
+    10,
+    10
 ]
 ashghal_types = [ashghalsT, ashghalsK]
 satlTPos = [0, screen_height - 200]
@@ -97,15 +105,33 @@ def showHowToWindow():
     screen_width = howToWindow.winfo_screenwidth()
     screen_height = howToWindow.winfo_screenheight()
     x = (screen_width / 2) - (500 / 2)
-    y = (screen_height / 2) - (500 / 2)
-    howToWindow.geometry('%dx%d+%d+%d' % (500, 500, x, y))
+    y = (screen_height / 2) - (540 / 2)
+    howToWindow.geometry('%dx%d+%d+%d' % (500, 540, x, y))
     howToFrame = modernTKinter.Frame(howToWindow, padding=10)
     howToFrame.pack()
     img = ImageTk.PhotoImage(Image.open(r"assets/img/howTo.png").resize((480, 480)))
     panel = modernTKinter.Label(howToFrame, image=img)
     panel.pack()
+    showGarbageInfoWindowButton = modernTKinter.Button(howToFrame, text="درباره زباله ها", width=240, command=showGarbageInfoWindow)
+    showGarbageInfoWindowButton.pack()
     howToWindow.resizable(False, False)
     howToWindow.mainloop()
+
+def showGarbageInfoWindow():
+    garbageInfoWindow = tkinter.Toplevel()
+    garbageInfoWindow.title("TafkiGame HowTo")
+    screen_width = garbageInfoWindow.winfo_screenwidth()
+    screen_height = garbageInfoWindow.winfo_screenheight()
+    x = (screen_width / 2) - (800 / 2)
+    y = (screen_height / 2) - (600 / 2)
+    garbageInfoWindow.geometry('%dx%d+%d+%d' % (800, 600, x, y))
+    garbageInfoFrame = modernTKinter.Frame(garbageInfoWindow, padding=10)
+    garbageInfoFrame.pack()
+    img = ImageTk.PhotoImage(Image.open(r"assets/img/garbageInfo.png").resize((780, 580)))
+    panel = modernTKinter.Label(garbageInfoFrame, image=img)
+    panel.pack()
+    garbageInfoWindow.resizable(False, False)
+    garbageInfoWindow.mainloop()
 
 def showMainWindow():
     global monitor_height
@@ -152,21 +178,24 @@ def showGameWindow(hardShip):
     global ashghal_two_speed
     global ashghal_one_pos
     global ashghal_two_pos
+    global gameOverStatus
     global monitor_height
     global monitor_width
     global screen_height
     global ashghal_types
     global screen_width
+    global start_ticks
     global ashghalsT
     global ashghalsK
+    global leftTime
     global running
-    global timer
     global score
+    global time
 
     global satlTPos
     global satlKPos
 
-    timer = hardShip * 15
+    leftTime = time = hardShip * 15
 
     screen_height = monitor_height / 2 + 150
     screen_width = monitor_width / 2 + 250
@@ -183,9 +212,33 @@ def showGameWindow(hardShip):
     bgIMG = pygame.transform.scale(bgPic, (screen_width, screen_height))
     gameScreen.blit(bgIMG, (0, 0))
 
+    def getBestScore():
+        file = open("Best.txt", "r")
+        txt = file.read()
+        if txt == "":
+            txt = "0"
+        file.close()
+        return int(txt)
+
+    def setBestScore():
+        global score
+
+        file = open("Best.txt", "w+")
+        file.write(str(score))
+        file.close()
+
     def makeScreenClear():
         gameScreen.fill((255, 255, 255))
         gameScreen.blit(bgIMG, (0, 0))
+
+    def update_information():
+        font = pygame.font.Font("assets/font/IRANSans.ttf", 25)
+        score_text = font.render('Score: ' + str(score), True, (color_of_score[0], color_of_score[1], color_of_score[2]))
+        time = font.render("Time: " + str(int(leftTime)) + "s", True, (color_of_score[0], color_of_score[1], color_of_score[2]))
+        level_text = font.render('HardShip: ' + str(hardShip), True, (color_of_score[0], color_of_score[1], color_of_score[2]))
+        gameScreen.blit(score_text, (20, 5))
+        gameScreen.blit(time, time.get_rect(center=(screen_width // 2, 25)))
+        gameScreen.blit(level_text, (screen_width - 150, 5))
 
     def playMusic():
         pygame.mixer.music.load("assets/music/BG.wav")
@@ -218,77 +271,6 @@ def showGameWindow(hardShip):
         pygame.time.delay(2500)
         makeScreenClear()
 
-    # def move_ashghals():
-    #     global ashghal_one_comsDown_status
-    #     global ashghal_two_comsDown_status
-    #     global ashghal_one_speed
-    #     global ashghal_two_speed
-    #     global ashghal_one_pos
-    #     global ashghal_two_pos
-    #     global screen_height
-    #     global ashghal_types
-    #     global screen_width
-    #     global ashghal_one
-    #     global ashghal_two
-    #     global speeds
-    #     global score
-
-    #     if ashghal_one_comsDown_status:
-    #         ashghal_type = ashghal_types[0]
-    #         ashghal = ashghal_type[random.randint(0, 9)]
-    #         ashghal_one = ashghal
-    #         ashghalPic = pygame.image.load(ashghal[0])
-    #         ashghalIMG = pygame.transform.scale(ashghalPic, (ashghal[1][1], ashghal[1][0]))
-    #         ashghal_one_pos = [random.randint(0, screen_width - ashghal[1][0]), 0]
-    #         ashghal_one_speed = speeds[hardShip - 1][random.randint(0, 4)]
-    #         gameScreen.blit(ashghalIMG, (ashghal_one_pos[0], ashghal_one_pos[1]))
-    #         ashghal_one_comsDown_status = False
-    #     else:
-    #         if check_collision(1):
-    #             score += 1
-    #             ashghal_one_comsDown_status = True
-    #         elif not ashghal_one_pos[1] + ashghal_one[1][1] >= screen_height:
-    #             makeScreenClear()
-    #             ashghal_one_pos[1] += ashghal_one_speed
-    #             gameScreen.blit(ashghalIMG, (ashghal_one_pos[0], ashghal_one_pos[1]))
-    #         elif ashghal_one_pos[1] + ashghal_one[1][1] >= screen_height:
-    #             makeScreenClear()
-    #             print("Finished!...")
-    #             score -= 1
-    #             ashghal_one_comsDown_status = True
-    #         else:
-    #             print("An Other Thing...")
-
-    #     if ashghal_two_comsDown_status:
-    #         ashghal_type = ashghal_types[1]
-    #         ashghal = ashghal_type[random.randint(0, 9)]
-    #         ashghal_two = ashghal
-    #         ashghalPic = pygame.image.load(ashghal[0])
-    #         ashghalIMG = pygame.transform.scale(ashghalPic, (ashghal[1][1], ashghal[1][0]))
-    #         ashghal_two_pos = [random.randint(0, screen_width - ashghal[1][0]), 0]
-    #         while ashghal_two_pos == ashghal_one_pos:
-    #             ashghal_two_pos = [random.randint(0, screen_width - ashghal[1][0]), 0]
-    #         ashghal_two_speed = speeds[hardShip - 1][random.randint(0, 4)]
-    #         gameScreen.blit(ashghalIMG, (ashghal_two_pos[0], ashghal_two_pos[1]))
-    #         ashghal_two_comsDown_status = False
-    #     else:
-    #         if check_collision(1):
-    #             score += 1
-    #             ashghal_two_comsDown_status = True
-    #         elif not ashghal_two_pos[1] + ashghal_two[1][1] >= screen_height:
-    #             makeScreenClear()
-    #             ashghal_two_pos[1] += ashghal_two_speed
-    #             gameScreen.blit(ashghalIMG, (ashghal_two_pos[0], ashghal_two_pos[1]))
-    #         elif ashghal_two_pos[1] + ashghal_two[1][1] >= screen_height:
-    #             makeScreenClear()
-    #             print("Finished!...")
-    #             score -= 1
-    #             ashghal_two_comsDown_status = True
-    #         else:
-    #             print("An Other Thing...")
-
-    #     print("Score: " + str(score))
-
     def move_ashghals():
         global ashghal_one_comsDown_status
         global ashghal_two_comsDown_status
@@ -304,8 +286,6 @@ def showGameWindow(hardShip):
         global speeds
         global score
 
-        makeScreenClear()
-
         if ashghal_one_comsDown_status:
             ashghal_one = ashghal_types[0][random.randint(0, 9)]
             ashghalPic = pygame.image.load(ashghal_one[0])
@@ -314,26 +294,45 @@ def showGameWindow(hardShip):
             ashghal_one_speed = speeds[hardShip - 1][random.randint(0, 4)]
             gameScreen.blit(ashghalIMG, (ashghal_one_pos[0], ashghal_one_pos[1]))
             ashghal_one_comsDown_status = False
-            print("Blited!...")
         elif check_collision(1):
-            score += 1
             ashghal_one_comsDown_status = True
         elif ashghal_one_pos[1] + ashghal_one[1][1] >= screen_height:
             score -= 1
             ashghal_one_comsDown_status = True
-            print("Finished!...")
         else:
             ashghal_one_pos[1] += ashghal_one_speed
             ashghalPic = pygame.image.load(ashghal_one[0])
             ashghalIMG = pygame.transform.scale(ashghalPic, (ashghal_one[1][1], ashghal_one[1][0]))
             gameScreen.blit(ashghalIMG, (ashghal_one_pos[0], ashghal_one_pos[1]))
-            print("Goes Downer!...")
+
+        if ashghal_two_comsDown_status:
+            ashghal_two = ashghal_types[1][random.randint(0, 9)]
+            while ashghal_two == ashghal_one:
+                ashghal_two = ashghal_types[0][random.randint(0, 9)]
+            ashghalPic = pygame.image.load(ashghal_two[0])
+            ashghalIMG = pygame.transform.scale(ashghalPic, (ashghal_two[1][1], ashghal_two[1][0]))
+            ashghal_two_pos = [random.randint(0, screen_width - ashghal_one[1][0]), 0]
+            while ashghal_two_pos == ashghal_one_pos:
+                ashghal_two_pos = [random.randint(0, screen_width - ashghal_one[1][0]), 0]
+            ashghal_two_speed = speeds[hardShip - 1][random.randint(0, 4)]
+            while ashghal_two_speed == ashghal_one_speed:
+                ashghal_two_speed = speeds[hardShip - 1][random.randint(0, 4)]
+            gameScreen.blit(ashghalIMG, (ashghal_two_pos[0], ashghal_two_pos[1]))
+            ashghal_two_comsDown_status = False
+        elif check_collision(2):
+            ashghal_two_comsDown_status = True
+        elif ashghal_two_pos[1] + ashghal_two[1][1] >= screen_height:
+            score -= 1
+            ashghal_two_comsDown_status = True
+        else:
+            ashghal_two_pos[1] += ashghal_two_speed
+            ashghalPic = pygame.image.load(ashghal_two[0])
+            ashghalIMG = pygame.transform.scale(ashghalPic, (ashghal_two[1][1], ashghal_two[1][0]))
+            gameScreen.blit(ashghalIMG, (ashghal_two_pos[0], ashghal_two_pos[1]))
 
     def move_satls():
         global satlTPos
         global satlKPos
-
-        makeScreenClear()
 
         satlTPic = pygame.image.load("assets/bins/T.png")
         satlTIMG = pygame.transform.scale(satlTPic, (100, 75))
@@ -342,8 +341,37 @@ def showGameWindow(hardShip):
         satlKIMG = pygame.transform.scale(satlKPic, (100, 75))
         gameScreen.blit(satlKIMG, (satlKPos[0], satlKPos[1]))
 
+    def timer():
+        global start_ticks
+        global leftTime
+        global time
+
+        seconds = (pygame.time.get_ticks() - start_ticks) / 1000
+        leftTime = time - seconds
+
     def check_collision(t):
-        return False
+        global score
+
+        if t == 1:
+            if satlTPos[0] < ashghal_one_pos[0] < satlTPos[0] + 100 and satlTPos[1] < ashghal_one_pos[1] < satlTPos[1] + 75:
+                score += 1
+                return True
+            elif satlKPos[0] < ashghal_one_pos[0] < satlKPos[0] + 100 and satlKPos[1] < ashghal_one_pos[1] < satlKPos[1] + 75:
+                score -= 1
+                return True
+            else:
+                return False
+        elif t == 2:
+            if satlKPos[0] < ashghal_two_pos[0] < satlKPos[0] + 100 and satlKPos[1] < ashghal_two_pos[1] < satlKPos[1] + 75:
+                score += 1
+                return True
+            elif satlKPos[0] < ashghal_two_pos[0] < satlKPos[0] + 100 and satlKPos[1] < ashghal_two_pos[1] < satlKPos[1] + 75:
+                score -= 1
+                return True
+            else:
+                return False
+        else:
+            return False
 
     def move_satlsT(wh):
         global satlTPos
@@ -367,15 +395,40 @@ def showGameWindow(hardShip):
             if not satlKPos[0] - satlsSpeed < 0:
                 satlKPos[0] -= satlsSpeed
 
-    # playMusic()
-    # startCountDown()
+    def gameOver():
+        global gameOverStatus
+        global score
+
+        gameOverStatus = True
+        if score >= getBestScore():
+            setBestScore()
+        font = pygame.font.Font("assets/font/IRANSans.ttf", 35)
+
+        makeScreenClear()
+        GOver = font.render("...!GameOver!...", True, (color_of_score[0], color_of_score[1], color_of_score[2]))
+        gameScreen.blit(GOver, GOver.get_rect(center=(screen_width // 2, screen_height / 100 * 40)))
+        TGScore = font.render("Your Score: " + str(score), True, (color_of_score[0], color_of_score[1], color_of_score[2]))
+        gameScreen.blit(TGScore, TGScore.get_rect(center=(screen_width // 2, screen_height / 100 * 50)))
+        BGScore = font.render("Your Best Score: " + str(getBestScore()), True, (color_of_score[0], color_of_score[1], color_of_score[2]))
+        gameScreen.blit(BGScore, BGScore.get_rect(center=(screen_width // 2, screen_height / 100 * 60)))
+
+    playMusic()
+    startCountDown()
+    start_ticks = pygame.time.get_ticks()
 
     while running:
+        if not gameOverStatus:
+            makeScreenClear()
+            update_information()
             move_ashghals()
             move_satls()
 
+            timer()
             clock.tick(fps)
             pygame.display.update()
+
+            if leftTime // 1 <= 0:
+                gameOver()
 
             for event in pygame.event.get():
                 if event.type == pygame.locals.QUIT:
@@ -390,7 +443,11 @@ def showGameWindow(hardShip):
                         move_satlsT("l")
                     elif pygame.key.get_pressed()[pygame.locals.K_d]:
                         move_satlsT("r")
-
-    pygame.quit()
+        else:
+            for event in pygame.event.get():
+                if event.type == pygame.locals.QUIT:
+                    running = False
+                    pygame.quit()
+            pygame.display.update()
 
 showMainWindow()
