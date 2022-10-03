@@ -20,7 +20,7 @@ screen_width = 0
 garbage_one = []
 garbage_two = []
 start_ticks = 0
-satlsSpeed = 25
+binsSpeed = 25
 running = True
 leftTime = 0
 score = 0
@@ -79,8 +79,8 @@ color_of_score = [
     10
 ]
 garbage_types = [garbagesT, garbagesK]
-satlTPos = [0, screen_height - 200]
-satlKPos = [screen_width - 100, screen_height - 100]
+binTPos = [0, screen_height - 200]
+binKPos = [screen_width - 100, screen_height - 100]
 
 def showAboutWindow():
     aboutWindow = tkinter.Tk()
@@ -192,16 +192,16 @@ def showGameWindow(hardShip):
     global score
     global time
 
-    global satlTPos
-    global satlKPos
+    global binTPos
+    global binKPos
 
     leftTime = time = hardShip * 15
 
     screen_height = monitor_height / 2 + 150
     screen_width = monitor_width / 2 + 250
 
-    satlTPos = [0, screen_height - 150]
-    satlKPos = [screen_width - 100, screen_height - 75]
+    binTPos = [0, screen_height - 150]
+    binKPos = [screen_width - 100, screen_height - 75]
 
     pygame.init()
     gameScreen = pygame.display.set_mode((screen_width, screen_height))
@@ -330,16 +330,16 @@ def showGameWindow(hardShip):
             garbageIMG = pygame.transform.scale(garbagePic, (garbage_two[1][1], garbage_two[1][0]))
             gameScreen.blit(garbageIMG, (garbage_two_pos[0], garbage_two_pos[1]))
 
-    def move_satls():
-        global satlTPos
-        global satlKPos
+    def move_bins():
+        global binTPos
+        global binKPos
 
-        satlTPic = pygame.image.load("assets/bins/T.png")
-        satlTIMG = pygame.transform.scale(satlTPic, (100, 75))
-        gameScreen.blit(satlTIMG, (satlTPos[0], satlTPos[1]))
-        satlKPic = pygame.image.load("assets/bins/K.png")
-        satlKIMG = pygame.transform.scale(satlKPic, (100, 75))
-        gameScreen.blit(satlKIMG, (satlKPos[0], satlKPos[1]))
+        binTPic = pygame.image.load("assets/bins/T.png")
+        binTIMG = pygame.transform.scale(binTPic, (100, 75))
+        gameScreen.blit(binTIMG, (binTPos[0], binTPos[1]))
+        binKPic = pygame.image.load("assets/bins/K.png")
+        binKIMG = pygame.transform.scale(binKPic, (100, 75))
+        gameScreen.blit(binKIMG, (binKPos[0], binKPos[1]))
 
     def timer():
         global start_ticks
@@ -353,19 +353,19 @@ def showGameWindow(hardShip):
         global score
 
         if t == 1:
-            if satlTPos[0] < garbage_one_pos[0] < satlTPos[0] + 100 and satlTPos[1] < garbage_one_pos[1] < satlTPos[1] + 75:
+            if binTPos[0] < garbage_one_pos[0] < binTPos[0] + 100 and binTPos[1] < garbage_one_pos[1] < binTPos[1] + 75:
                 score += 1
                 return True
-            elif satlKPos[0] < garbage_one_pos[0] < satlKPos[0] + 100 and satlKPos[1] < garbage_one_pos[1] < satlKPos[1] + 75:
+            elif binKPos[0] < garbage_one_pos[0] < binKPos[0] + 100 and binKPos[1] < garbage_one_pos[1] < binKPos[1] + 75:
                 score -= 1
                 return True
             else:
                 return False
         elif t == 2:
-            if satlKPos[0] < garbage_two_pos[0] < satlKPos[0] + 100 and satlKPos[1] < garbage_two_pos[1] < satlKPos[1] + 75:
+            if binKPos[0] < garbage_two_pos[0] < binKPos[0] + 100 and binKPos[1] < garbage_two_pos[1] < binKPos[1] + 75:
                 score += 1
                 return True
-            elif satlKPos[0] < garbage_two_pos[0] < satlKPos[0] + 100 and satlKPos[1] < garbage_two_pos[1] < satlKPos[1] + 75:
+            elif binKPos[0] < garbage_two_pos[0] < binKPos[0] + 100 and binKPos[1] < garbage_two_pos[1] < binKPos[1] + 75:
                 score -= 1
                 return True
             else:
@@ -373,27 +373,27 @@ def showGameWindow(hardShip):
         else:
             return False
 
-    def move_satlsT(wh):
-        global satlTPos
-        global satlsSpeed
+    def move_binsT(wh):
+        global binTPos
+        global binsSpeed
 
         if wh == "r":
-            if not satlTPos[0] + 100 >= screen_width:
-                satlTPos[0] += satlsSpeed
+            if not binTPos[0] + 100 >= screen_width:
+                binTPos[0] += binsSpeed
         elif wh == "l":
-            if not satlTPos[0] - satlsSpeed < 0:
-                satlTPos[0] -= satlsSpeed
+            if not binTPos[0] - binsSpeed < 0:
+                binTPos[0] -= binsSpeed
 
-    def move_satlsK(wh):
-        global satlKPos
-        global satlsSpeed
+    def move_binsK(wh):
+        global binKPos
+        global binsSpeed
 
         if wh == "r":
-            if not satlKPos[0] + 100 >= screen_width:
-                satlKPos[0] += satlsSpeed
+            if not binKPos[0] + 100 >= screen_width:
+                binKPos[0] += binsSpeed
         elif wh == "l":
-            if not satlKPos[0] - satlsSpeed < 0:
-                satlKPos[0] -= satlsSpeed
+            if not binKPos[0] - binsSpeed < 0:
+                binKPos[0] -= binsSpeed
 
     def gameOver():
         global gameOverStatus
@@ -421,7 +421,7 @@ def showGameWindow(hardShip):
             makeScreenClear()
             update_information()
             move_garbages()
-            move_satls()
+            move_bins()
 
             timer()
             clock.tick(fps)
@@ -436,13 +436,13 @@ def showGameWindow(hardShip):
                     pygame.quit()
                 if event.type == pygame.locals.KEYDOWN:
                     if pygame.key.get_pressed()[pygame.locals.K_LEFT]:
-                        move_satlsK("l")
+                        move_binsK("l")
                     elif pygame.key.get_pressed()[pygame.locals.K_RIGHT]:
-                        move_satlsK("r")
+                        move_binsK("r")
                     if pygame.key.get_pressed()[pygame.locals.K_a]:
-                        move_satlsT("l")
+                        move_binsT("l")
                     elif pygame.key.get_pressed()[pygame.locals.K_d]:
-                        move_satlsT("r")
+                        move_binsT("r")
         else:
             for event in pygame.event.get():
                 if event.type == pygame.locals.QUIT:
