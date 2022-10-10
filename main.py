@@ -195,7 +195,12 @@ def showGameWindow(hardShip):
     global binTPos
     global binKPos
 
-    leftTime = time = hardShip * 15
+    if hardShip == 1:
+        leftTime = time = 45
+    elif hardShip == 2:
+        leftTime = time = 37.5
+    elif hardShip == 3:
+        leftTime = time = 30
 
     screen_height = monitor_height / 2 + 150
     screen_width = monitor_width / 2 + 250
@@ -379,10 +384,10 @@ def showGameWindow(hardShip):
 
         if wh == "r":
             if not binTPos[0] + 100 >= screen_width:
-                binTPos[0] += binsSpeed
+                binTPos[0] += hardShip * binsSpeed
         elif wh == "l":
-            if not binTPos[0] - binsSpeed < 0:
-                binTPos[0] -= binsSpeed
+            if not binTPos[0] - hardShip * binsSpeed < 0:
+                binTPos[0] -= hardShip * binsSpeed
 
     def move_binsK(wh):
         global binKPos
@@ -390,10 +395,10 @@ def showGameWindow(hardShip):
 
         if wh == "r":
             if not binKPos[0] + 100 >= screen_width:
-                binKPos[0] += binsSpeed
+                binKPos[0] += hardShip * binsSpeed
         elif wh == "l":
-            if not binKPos[0] - binsSpeed < 0:
-                binKPos[0] -= binsSpeed
+            if not binKPos[0] - hardShip * binsSpeed < 0:
+                binKPos[0] -= hardShip * binsSpeed
 
     def gameOver():
         global gameOverStatus
@@ -425,6 +430,9 @@ def showGameWindow(hardShip):
             update_information()
             move_garbages()
             move_bins()
+
+            if score < 0:
+                score = 0
 
             timer()
             clock.tick(fps)
