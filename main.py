@@ -13,6 +13,8 @@ garbage_two_pos = [0, 0]
 gameOverStatus = False
 garbage_one_speed = 0
 garbage_two_speed = 0
+binTMoveState = False
+binKMoveState = False
 monitor_height = 0
 monitor_width = 0
 screen_height = 0
@@ -20,10 +22,11 @@ screen_width = 0
 garbage_one = []
 garbage_two = []
 start_ticks = 0
-binsSpeed = 25
+binsSpeed = 12.5
 running = True
 leftTime = 0
 score = 0
+power = 3
 time = 0
 fps = 40
 speeds = [
@@ -180,6 +183,8 @@ def showGameWindow(hardShip):
     global garbage_two_pos
     global gameOverStatus
     global monitor_height
+    global binTMoveState
+    global binKMoveState
     global monitor_width
     global screen_height
     global garbage_types
@@ -190,17 +195,18 @@ def showGameWindow(hardShip):
     global leftTime
     global running
     global score
+    global power
     global time
 
     global binTPos
     global binKPos
 
     if hardShip == 1:
-        leftTime = time = 45
+        power = 15
     elif hardShip == 2:
-        leftTime = time = 37.5
+        power = 10
     elif hardShip == 3:
-        leftTime = time = 30
+        power = 5
 
     screen_height = monitor_height / 2 + 150
     screen_width = monitor_width / 2 + 250
@@ -237,12 +243,14 @@ def showGameWindow(hardShip):
         gameScreen.blit(bgIMG, (0, 0))
 
     def update_information():
+        global power
+
         font = pygame.font.Font("assets/font/IRANSans.ttf", 25)
         score_text = font.render('Score: ' + str(score), True, (color_of_score[0], color_of_score[1], color_of_score[2]))
-        time = font.render("Time: " + str(int(leftTime)) + "s", True, (color_of_score[0], color_of_score[1], color_of_score[2]))
+        power_text = font.render("Power: " + str(int(power)) + "♥", True, (color_of_score[0], color_of_score[1], color_of_score[2]))
         level_text = font.render('HardShip: ' + str(hardShip), True, (color_of_score[0], color_of_score[1], color_of_score[2]))
         gameScreen.blit(score_text, (20, 5))
-        gameScreen.blit(time, time.get_rect(center=(screen_width // 2, 25)))
+        gameScreen.blit(power_text, power_text.get_rect(center=(screen_width // 2, 25)))
         gameScreen.blit(level_text, (screen_width - 150, 5))
 
     def playMusic():
@@ -289,7 +297,7 @@ def showGameWindow(hardShip):
         global garbage_one
         global garbage_two
         global speeds
-        global score
+        global power
 
         if garbage_one_comsDown_status:
             garbage_one = garbage_types[0][random.randint(0, 9)]
@@ -302,7 +310,7 @@ def showGameWindow(hardShip):
         elif check_collision(1):
             garbage_one_comsDown_status = True
         elif garbage_one_pos[1] + garbage_one[1][1] >= screen_height:
-            score -= 1
+            power -= 0.5
             garbage_one_comsDown_status = True
         else:
             garbage_one_pos[1] += garbage_one_speed
@@ -327,7 +335,7 @@ def showGameWindow(hardShip):
         elif check_collision(2):
             garbage_two_comsDown_status = True
         elif garbage_two_pos[1] + garbage_two[1][1] >= screen_height:
-            score -= 1
+            power -= 0.5
             garbage_two_comsDown_status = True
         else:
             garbage_two_pos[1] += garbage_two_speed
@@ -339,6 +347,9 @@ def showGameWindow(hardShip):
         global binTPos
         global binKPos
 
+        move_binsT()
+        move_binsK()
+
         binTPic = pygame.image.load("assets/bins/T.png")
         binTIMG = pygame.transform.scale(binTPic, (100, 75))
         gameScreen.blit(binTIMG, (binTPos[0], binTPos[1]))
@@ -346,23 +357,16 @@ def showGameWindow(hardShip):
         binKIMG = pygame.transform.scale(binKPic, (100, 75))
         gameScreen.blit(binKIMG, (binKPos[0], binKPos[1]))
 
-    def timer():
-        global start_ticks
-        global leftTime
-        global time
-
-        seconds = (pygame.time.get_ticks() - start_ticks) / 1000
-        leftTime = time - seconds
-
     def check_collision(t):
         global score
+        global power
 
         if t == 1:
             if binTPos[0] < garbage_one_pos[0] < binTPos[0] + 100 and binTPos[1] < garbage_one_pos[1] < binTPos[1] + 75:
                 score += 1
                 return True
             elif binKPos[0] < garbage_one_pos[0] < binKPos[0] + 100 and binKPos[1] < garbage_one_pos[1] < binKPos[1] + 75:
-                score -= 1
+                power -= 1
                 return True
             else:
                 return False
@@ -370,35 +374,39 @@ def showGameWindow(hardShip):
             if binKPos[0] < garbage_two_pos[0] < binKPos[0] + 100 and binKPos[1] < garbage_two_pos[1] < binKPos[1] + 75:
                 score += 1
                 return True
-            elif binKPos[0] < garbage_two_pos[0] < binKPos[0] + 100 and binKPos[1] < garbage_two_pos[1] < binKPos[1] + 75:
-                score -= 1
+            elif binTPos[0] < garbage_two_pos[0] < binTPos[0] + 100 and binTPos[1] < garbage_two_pos[1] < binTPos[1] + 75:
+                power -= 1
                 return True
             else:
                 return False
         else:
             return False
 
-    def move_binsT(wh):
+    def move_binsT():
         global binTPos
         global binsSpeed
+        global binTMoveState
 
-        if wh == "r":
-            if not binTPos[0] + 100 >= screen_width:
-                binTPos[0] += hardShip * binsSpeed
-        elif wh == "l":
-            if not binTPos[0] - hardShip * binsSpeed < 0:
-                binTPos[0] -= hardShip * binsSpeed
+        if not binTMoveState == False:
+            if binTMoveState == "r":
+                if not binTPos[0] + 100 >= screen_width:
+                    binTPos[0] += hardShip * binsSpeed
+            elif binTMoveState == "l":
+                if not binTPos[0] - hardShip * binsSpeed < 0:
+                    binTPos[0] -= hardShip * binsSpeed
 
-    def move_binsK(wh):
+    def move_binsK():
         global binKPos
         global binsSpeed
+        global binKMoveState
 
-        if wh == "r":
-            if not binKPos[0] + 100 >= screen_width:
-                binKPos[0] += hardShip * binsSpeed
-        elif wh == "l":
-            if not binKPos[0] - hardShip * binsSpeed < 0:
-                binKPos[0] -= hardShip * binsSpeed
+        if not binKMoveState == False:
+            if binKMoveState == "r":
+                if not binKPos[0] + 100 >= screen_width:
+                    binKPos[0] += hardShip * binsSpeed
+            elif binKMoveState == "l":
+                if not binKPos[0] - hardShip * binsSpeed < 0:
+                    binKPos[0] -= hardShip * binsSpeed
 
     def gameOver():
         global gameOverStatus
@@ -431,14 +439,10 @@ def showGameWindow(hardShip):
             move_garbages()
             move_bins()
 
-            if score < 0:
-                score = 0
-
-            timer()
             clock.tick(fps)
             pygame.display.update()
 
-            if leftTime // 1 <= 0:
+            if int(power) <= 0:
                 gameOver()
 
             for event in pygame.event.get():
@@ -447,13 +451,16 @@ def showGameWindow(hardShip):
                     pygame.quit()
                 if event.type == pygame.locals.KEYDOWN:
                     if pygame.key.get_pressed()[pygame.locals.K_LEFT]:
-                        move_binsK("l")
+                        binKMoveState = "l"
                     elif pygame.key.get_pressed()[pygame.locals.K_RIGHT]:
-                        move_binsK("r")
+                        binKMoveState = "r"
                     if pygame.key.get_pressed()[pygame.locals.K_a]:
-                        move_binsT("l")
+                        binTMoveState = "l"
                     elif pygame.key.get_pressed()[pygame.locals.K_d]:
-                        move_binsT("r")
+                        binTMoveState = "r"
+                if event.type == pygame.locals.KEYUP:
+                    binTMoveState = False
+                    binKMoveState = False
         else:
             for event in pygame.event.get():
                 if event.type == pygame.locals.QUIT:

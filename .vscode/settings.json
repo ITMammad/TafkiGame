@@ -6,10 +6,12 @@
         "blit",
         "coms",
         "KEYDOWN",
+        "KEYUP",
         "pygame",
         "satl",
         "satls",
         "Tafki",
         "USEREVENT"
-    ]
+    ],
+    "python.analysis.typeCheckingMode": "basic"
 }
