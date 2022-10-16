@@ -152,11 +152,19 @@ def showMainWindow():
     mainWindow.geometry('%dx%d+%d+%d' % (350, 132.5, x, y))
     mainFrame = modernTKinter.Frame(padding=10)
     mainFrame.pack()
+
     def sel():
         selectedOption = var.get()
         if selectedOption == 1 or selectedOption == 2 or selectedOption == 3:
             mainWindow.destroy()
             showGameWindow(selectedOption)
+
+    def checkHardShip():
+        file = open("hardShip.txt", "r")
+        txt = file.read()
+        return int(txt)
+
+    topHardShip = checkHardShip();
 
     var = tkinter.IntVar()
     R1 = modernTKinter.Radiobutton(mainFrame, text="آسان", variable=var, value=1)
@@ -165,6 +173,16 @@ def showMainWindow():
     R2.grid(row=2, column=1)
     R3 = modernTKinter.Radiobutton(mainFrame, text="سخت", variable=var, value=3)
     R3.grid(row=3, column=1)
+
+    if topHardShip < 1:
+        R2.configure(state = tkinter.DISABLED)
+        R3.configure(state = tkinter.DISABLED)
+    elif topHardShip == 1:
+        R1.configure(state = tkinter.DISABLED)
+        R3.configure(state = tkinter.DISABLED)
+    else:
+        print("Full")
+
     button = modernTKinter.Button(mainFrame, text="شروع بازی", width=24, command=sel)
     button.grid(row=4, column=1)
     aboutButton = modernTKinter.Button(mainFrame, text="درباره ما", width=12, command=showAboutWindow)
@@ -190,6 +208,7 @@ def showGameWindow(hardShip):
     global garbage_types
     global screen_width
     global start_ticks
+    global binsSpeed
     global garbagesT
     global garbagesK
     global leftTime
@@ -201,18 +220,14 @@ def showGameWindow(hardShip):
     global binTPos
     global binKPos
 
-    if hardShip == 1:
-        power = 15
-    elif hardShip == 2:
-        power = 10
-    elif hardShip == 3:
-        power = 5
-
+    power = 5
     screen_height = monitor_height / 2 + 150
     screen_width = monitor_width / 2 + 250
 
     binTPos = [0, screen_height - 150]
     binKPos = [screen_width - 100, screen_height - 75]
+
+    binsSpeed = ((screen_width / 100) * 2.5)
 
     pygame.init()
     gameScreen = pygame.display.set_mode((screen_width, screen_height))
@@ -223,20 +238,11 @@ def showGameWindow(hardShip):
     bgIMG = pygame.transform.scale(bgPic, (screen_width, screen_height))
     gameScreen.blit(bgIMG, (0, 0))
 
-    def getBestScore():
-        file = open("Best.txt", "r")
-        txt = file.read()
-        if txt == "":
-            txt = "0"
+    def setHardShip():
+        file = open("hardShip.txt", "w+")
+        file.write(str(hardShip))
         file.close()
-        return int(txt)
-
-    def setBestScore():
-        global score
-
-        file = open("Best.txt", "w+")
-        file.write(str(score))
-        file.close()
+        return True
 
     def makeScreenClear():
         gameScreen.fill((255, 255, 255))
@@ -246,9 +252,9 @@ def showGameWindow(hardShip):
         global power
 
         font = pygame.font.Font("assets/font/IRANSans.ttf", 25)
-        score_text = font.render('Score: ' + str(score), True, (color_of_score[0], color_of_score[1], color_of_score[2]))
-        power_text = font.render("Power: " + str(int(power)) + "♥", True, (color_of_score[0], color_of_score[1], color_of_score[2]))
-        level_text = font.render('HardShip: ' + str(hardShip), True, (color_of_score[0], color_of_score[1], color_of_score[2]))
+        score_text = font.render('Score: ' + str(score), True, (25, 205, 25))
+        power_text = pygame.font.Font("assets/font/Emoji.ttf", 25).render("♥: " + str(power - 0.0), True, (255,0, 0))
+        level_text = font.render('HardShip: ' + str(hardShip), True, (25, 25, 205))
         gameScreen.blit(score_text, (20, 5))
         gameScreen.blit(power_text, power_text.get_rect(center=(screen_width // 2, 25)))
         gameScreen.blit(level_text, (screen_width - 150, 5))
@@ -390,10 +396,10 @@ def showGameWindow(hardShip):
         if not binTMoveState == False:
             if binTMoveState == "r":
                 if not binTPos[0] + 100 >= screen_width:
-                    binTPos[0] += hardShip * binsSpeed
+                    binTPos[0] += int(binsSpeed - 0.0)
             elif binTMoveState == "l":
-                if not binTPos[0] - hardShip * binsSpeed < 0:
-                    binTPos[0] -= hardShip * binsSpeed
+                if not binTPos[0] - binsSpeed < 0:
+                    binTPos[0] -= int(binsSpeed - 0.0)
 
     def move_binsK():
         global binKPos
@@ -403,10 +409,10 @@ def showGameWindow(hardShip):
         if not binKMoveState == False:
             if binKMoveState == "r":
                 if not binKPos[0] + 100 >= screen_width:
-                    binKPos[0] += hardShip * binsSpeed
+                    binKPos[0] += int(binsSpeed - 0.0)
             elif binKMoveState == "l":
-                if not binKPos[0] - hardShip * binsSpeed < 0:
-                    binKPos[0] -= hardShip * binsSpeed
+                if not binKPos[0] - binsSpeed < 0:
+                    binKPos[0] -= int(binsSpeed - 0.0)
 
     def gameOver():
         global gameOverStatus
@@ -416,8 +422,6 @@ def showGameWindow(hardShip):
         pygame.mixer.music.stop()
         pygame.mixer.music.load("assets/music/GO.wav")
         pygame.mixer.music.play()
-        if score >= getBestScore():
-            setBestScore()
         font = pygame.font.Font("assets/font/IRANSans.ttf", 35)
 
         makeScreenClear()
@@ -425,11 +429,30 @@ def showGameWindow(hardShip):
         gameScreen.blit(GOver, GOver.get_rect(center=(screen_width // 2, screen_height / 100 * 40)))
         TGScore = font.render("Your Score: " + str(score), True, (color_of_score[0], color_of_score[1], color_of_score[2]))
         gameScreen.blit(TGScore, TGScore.get_rect(center=(screen_width // 2, screen_height / 100 * 50)))
-        BGScore = font.render("Your Best Score: " + str(getBestScore()), True, (color_of_score[0], color_of_score[1], color_of_score[2]))
+        BGScore = font.render("HardShip: " + str(hardShip), True, (color_of_score[0], color_of_score[1], color_of_score[2]))
         gameScreen.blit(BGScore, BGScore.get_rect(center=(screen_width // 2, screen_height / 100 * 60)))
 
-    playMusic()
-    startCountDown()
+    def gameWin():
+        global gameOverStatus
+        global score
+
+        gameOverStatus = True
+        pygame.mixer.music.stop()
+        pygame.mixer.music.load("assets/music/GO.wav")
+        pygame.mixer.music.play()
+        setHardShip()
+        font = pygame.font.Font("assets/font/IRANSans.ttf", 35)
+
+        makeScreenClear()
+        GOver = font.render("...!You Win This HardShip!...", True, (25, 200, 0))
+        gameScreen.blit(GOver, GOver.get_rect(center=(screen_width // 2, screen_height / 100 * 40)))
+        TGScore = font.render("Your Score: " + str(score), True, (0, 25, 200))
+        gameScreen.blit(TGScore, TGScore.get_rect(center=(screen_width // 2, screen_height / 100 * 50)))
+        BGScore = font.render("HardShip: " + str(hardShip), True, (200, 0, 25))
+        gameScreen.blit(BGScore, BGScore.get_rect(center=(screen_width // 2, screen_height / 100 * 60)))
+
+    # playMusic()
+    # startCountDown()
     start_ticks = pygame.time.get_ticks()
 
     while running:
@@ -441,6 +464,9 @@ def showGameWindow(hardShip):
 
             clock.tick(fps)
             pygame.display.update()
+
+            if score >= 20 + [0, 15, 30][hardShip - 1]:
+                gameWin()
 
             if int(power) <= 0:
                 gameOver()
