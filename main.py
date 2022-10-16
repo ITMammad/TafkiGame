@@ -29,29 +29,7 @@ score = 0
 power = 3
 time = 0
 fps = 40
-speeds = [
-    [
-        1,
-        2,
-        3,
-        4,
-        5
-    ],
-    [
-        3,
-        4,
-        5,
-        6,
-        7
-    ],
-    [
-        5,
-        6,
-        7,
-        8,
-        9
-    ]
-]
+speeds = [ 0.1, 0.2, 0.3, 0.4, 0.5 ]
 garbagesT = [
     ["assets/garbages/T/1.png", [50, 120]],
     ["assets/garbages/T/2.png", [50, 127]],
@@ -76,11 +54,7 @@ garbagesK = [
     ["assets/garbages/K/9.png", [50, 27]],
     ["assets/garbages/K/10.png", [50, 73]],
 ]
-color_of_score = [
-    10,
-    10,
-    10
-]
+color_of_score = [ 10, 10, 10 ]
 garbage_types = [garbagesT, garbagesK]
 binTPos = [0, screen_height - 200]
 binKPos = [screen_width - 100, screen_height - 100]
@@ -220,21 +194,23 @@ def showGameWindow(hardShip):
     global binTPos
     global binKPos
 
-    power = 5
+
+    power = ((hardShip * 2) + 1)
+
     screen_height = monitor_height / 2 + 150
     screen_width = monitor_width / 2 + 250
 
     binTPos = [0, screen_height - 150]
-    binKPos = [screen_width - 100, screen_height - 75]
+    binKPos = [screen_width - 75, screen_height - 75]
 
-    binsSpeed = ((screen_width / 100) * 2.5)
+    binsSpeed = ((screen_width / 100) * 1.9)
 
     pygame.init()
     gameScreen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption('TafkiGame')
     Icon = pygame.image.load('assets/img/logo.png')
     pygame.display.set_icon(Icon)
-    bgPic = pygame.image.load("assets/img/bg.jpg")
+    bgPic = pygame.image.load("assets/img/backGround.png")
     bgIMG = pygame.transform.scale(bgPic, (screen_width, screen_height))
     gameScreen.blit(bgIMG, (0, 0))
 
@@ -310,7 +286,7 @@ def showGameWindow(hardShip):
             garbagePic = pygame.image.load(garbage_one[0])
             garbageIMG = pygame.transform.scale(garbagePic, (garbage_one[1][1], garbage_one[1][0]))
             garbage_one_pos = [random.randint(0, screen_width - garbage_one[1][0]), 0]
-            garbage_one_speed = speeds[hardShip - 1][random.randint(0, 4)]
+            garbage_one_speed = speeds[random.randint(0, 4)]
             gameScreen.blit(garbageIMG, (garbage_one_pos[0], garbage_one_pos[1]))
             garbage_one_comsDown_status = False
         elif check_collision(1):
@@ -319,7 +295,7 @@ def showGameWindow(hardShip):
             power -= 0.5
             garbage_one_comsDown_status = True
         else:
-            garbage_one_pos[1] += garbage_one_speed
+            garbage_one_pos[1] += int((screen_width / 100) * garbage_one_speed - 0.0)
             garbagePic = pygame.image.load(garbage_one[0])
             garbageIMG = pygame.transform.scale(garbagePic, (garbage_one[1][1], garbage_one[1][0]))
             gameScreen.blit(garbageIMG, (garbage_one_pos[0], garbage_one_pos[1]))
@@ -333,9 +309,9 @@ def showGameWindow(hardShip):
             garbage_two_pos = [random.randint(0, screen_width - garbage_one[1][0]), 0]
             while garbage_two_pos == garbage_one_pos:
                 garbage_two_pos = [random.randint(0, screen_width - garbage_one[1][0]), 0]
-            garbage_two_speed = speeds[hardShip - 1][random.randint(0, 4)]
+            garbage_two_speed = speeds[random.randint(0, 4)]
             while garbage_two_speed == garbage_one_speed:
-                garbage_two_speed = speeds[hardShip - 1][random.randint(0, 4)]
+                garbage_two_speed = speeds[random.randint(0, 4)]
             gameScreen.blit(garbageIMG, (garbage_two_pos[0], garbage_two_pos[1]))
             garbage_two_comsDown_status = False
         elif check_collision(2):
@@ -344,7 +320,7 @@ def showGameWindow(hardShip):
             power -= 0.5
             garbage_two_comsDown_status = True
         else:
-            garbage_two_pos[1] += garbage_two_speed
+            garbage_two_pos[1] += int((screen_width / 100) * garbage_two_speed - 0.0)
             garbagePic = pygame.image.load(garbage_two[0])
             garbageIMG = pygame.transform.scale(garbagePic, (garbage_two[1][1], garbage_two[1][0]))
             gameScreen.blit(garbageIMG, (garbage_two_pos[0], garbage_two_pos[1]))
@@ -357,10 +333,10 @@ def showGameWindow(hardShip):
         move_binsK()
 
         binTPic = pygame.image.load("assets/bins/T.png")
-        binTIMG = pygame.transform.scale(binTPic, (100, 75))
+        binTIMG = pygame.transform.scale(binTPic, (75, 75))
         gameScreen.blit(binTIMG, (binTPos[0], binTPos[1]))
         binKPic = pygame.image.load("assets/bins/K.png")
-        binKIMG = pygame.transform.scale(binKPic, (100, 75))
+        binKIMG = pygame.transform.scale(binKPic, (75, 75))
         gameScreen.blit(binKIMG, (binKPos[0], binKPos[1]))
 
     def check_collision(t):
@@ -395,11 +371,11 @@ def showGameWindow(hardShip):
 
         if not binTMoveState == False:
             if binTMoveState == "r":
-                if not binTPos[0] + 100 >= screen_width:
-                    binTPos[0] += int(binsSpeed - 0.0)
+                if not binTPos[0] + 75 >= screen_width:
+                    binTPos[0] += int((((hardShip + 1) / 2) * binsSpeed) - 0.0)
             elif binTMoveState == "l":
-                if not binTPos[0] - binsSpeed < 0:
-                    binTPos[0] -= int(binsSpeed - 0.0)
+                if not binTPos[0] - int((((hardShip + 1) / 2) * binsSpeed) - 0.0) < 0:
+                    binTPos[0] -= int((((hardShip + 1) / 2) * binsSpeed) - 0.0)
 
     def move_binsK():
         global binKPos
@@ -408,11 +384,11 @@ def showGameWindow(hardShip):
 
         if not binKMoveState == False:
             if binKMoveState == "r":
-                if not binKPos[0] + 100 >= screen_width:
-                    binKPos[0] += int(binsSpeed - 0.0)
+                if not binKPos[0] + 75 >= screen_width:
+                    binKPos[0] += int((((hardShip + 1) / 2) * binsSpeed) - 0.0)
             elif binKMoveState == "l":
-                if not binKPos[0] - binsSpeed < 0:
-                    binKPos[0] -= int(binsSpeed - 0.0)
+                if not binKPos[0] - int((((hardShip + 1) / 2) * binsSpeed) - 0.0) < 0:
+                    binKPos[0] -= int((((hardShip + 1) / 2) * binsSpeed) - 0.0)
 
     def gameOver():
         global gameOverStatus
@@ -424,7 +400,11 @@ def showGameWindow(hardShip):
         pygame.mixer.music.play()
         font = pygame.font.Font("assets/font/IRANSans.ttf", 35)
 
-        makeScreenClear()
+        bgPic = pygame.image.load("assets/img/GameOver.png")
+        bgIMG = pygame.transform.scale(bgPic, (screen_width, screen_height))
+        gameScreen.fill((255, 255, 255))
+        gameScreen.blit(bgIMG, (0, 0))
+
         GOver = font.render("...!GameOver!...", True, (color_of_score[0], color_of_score[1], color_of_score[2]))
         gameScreen.blit(GOver, GOver.get_rect(center=(screen_width // 2, screen_height / 100 * 40)))
         TGScore = font.render("Your Score: " + str(score), True, (color_of_score[0], color_of_score[1], color_of_score[2]))
@@ -443,7 +423,11 @@ def showGameWindow(hardShip):
         setHardShip()
         font = pygame.font.Font("assets/font/IRANSans.ttf", 35)
 
-        makeScreenClear()
+        bgPic = pygame.image.load("assets/img/gameWin.png")
+        bgIMG = pygame.transform.scale(bgPic, (screen_width, screen_height))
+        gameScreen.fill((255, 255, 255))
+        gameScreen.blit(bgIMG, (0, 0))
+
         GOver = font.render("...!You Win This HardShip!...", True, (25, 200, 0))
         gameScreen.blit(GOver, GOver.get_rect(center=(screen_width // 2, screen_height / 100 * 40)))
         TGScore = font.render("Your Score: " + str(score), True, (0, 25, 200))
