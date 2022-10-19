@@ -8,6 +8,8 @@ import tkinter.ttk as modernTKinter
 garbage_one_comsDown_status = True
 garbage_two_comsDown_status = True
 clock = pygame.time.Clock()
+godPowerGiftStatus = False
+godPowerGiftSpeed = 0
 garbage_one_pos = [0, 0]
 garbage_two_pos = [0, 0]
 gameOverStatus = False
@@ -15,6 +17,7 @@ garbage_one_speed = 0
 garbage_two_speed = 0
 binTMoveState = False
 binKMoveState = False
+godPowerPos = [0, 0]
 monitor_height = 0
 monitor_width = 0
 screen_height = 0
@@ -27,33 +30,12 @@ running = True
 leftTime = 0
 score = 0
 power = 3
+galb = None
 time = 0
-fps = 40
-speeds = [ 0.1, 0.2, 0.3, 0.4, 0.5 ]
-garbagesT = [
-    ["assets/garbages/T/1.png", [50, 120]],
-    ["assets/garbages/T/2.png", [50, 127]],
-    ["assets/garbages/T/3.png", [50, 114]],
-    ["assets/garbages/T/4.png", [50, 61]],
-    ["assets/garbages/T/5.png", [50, 51]],
-    ["assets/garbages/T/6.png", [50, 79]],
-    ["assets/garbages/T/7.png", [50, 30]],
-    ["assets/garbages/T/8.png", [50, 43]],
-    ["assets/garbages/T/9.png", [50, 79]],
-    ["assets/garbages/T/10.png", [50, 26]],
-]
-garbagesK = [
-    ["assets/garbages/K/1.png", [50, 41]],
-    ["assets/garbages/K/2.png", [50, 51]],
-    ["assets/garbages/K/3.png", [50, 47]],
-    ["assets/garbages/K/4.png", [50, 49]],
-    ["assets/garbages/K/5.png", [50, 31]],
-    ["assets/garbages/K/6.png", [50, 48]],
-    ["assets/garbages/K/7.png", [50, 57]],
-    ["assets/garbages/K/8.png", [50, 87]],
-    ["assets/garbages/K/9.png", [50, 27]],
-    ["assets/garbages/K/10.png", [50, 73]],
-]
+fps = 120
+speeds = [0.40, 0.45, 0.50, 0.55, 0.60]
+garbagesT = []
+garbagesK = []
 color_of_score = [ 10, 10, 10 ]
 garbage_types = [garbagesT, garbagesK]
 binTPos = [0, screen_height - 200]
@@ -154,8 +136,9 @@ def showMainWindow():
     elif topHardShip == 1:
         R1.configure(state = tkinter.DISABLED)
         R3.configure(state = tkinter.DISABLED)
-    else:
-        print("Full")
+    elif topHardShip == 3:
+        R1.configure(state = tkinter.DISABLED)
+        R2.configure(state = tkinter.DISABLED)
 
     button = modernTKinter.Button(mainFrame, text="شروع بازی", width=24, command=sel)
     button.grid(row=4, column=1)
@@ -169,6 +152,8 @@ def showMainWindow():
 def showGameWindow(hardShip):
     global garbage_one_comsDown_status
     global garbage_two_comsDown_status
+    global godPowerGiftStatus
+    global godPowerGiftSpeed
     global garbage_one_speed
     global garbage_two_speed
     global garbage_one_pos
@@ -190,29 +175,58 @@ def showGameWindow(hardShip):
     global score
     global power
     global time
-
+    global galb
     global binTPos
     global binKPos
 
-
     power = ((hardShip * 2) + 1)
-
     screen_height = monitor_height / 2 + 150
     screen_width = monitor_width / 2 + 250
-
     binTPos = [0, screen_height - 150]
-    binKPos = [screen_width - 75, screen_height - 75]
-
-    binsSpeed = ((screen_width / 100) * 1.9)
+    binKPos = [screen_width - 100, screen_height - 75]
+    binsSpeed = ((screen_width / 100) * 2.25)
+    godPowerGiftSpeed = ((screen_width / 100) * 0.65)
 
     pygame.init()
     gameScreen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption('TafkiGame')
     Icon = pygame.image.load('assets/img/logo.png')
     pygame.display.set_icon(Icon)
-    bgPic = pygame.image.load("assets/img/backGround.png")
+    emojiFont = pygame.font.Font("assets/font/Emoji.ttf", 50)
+    galb = emojiFont.render("♥", True, (255, 0, 0))
+    mainFont = pygame.font.Font("assets/font/IRANSans.ttf", 25)
+    smallEmojiFont = pygame.font.Font("assets/font/Emoji.ttf", 25)
+    correctMusic = pygame.mixer.Sound("assets/music/Correct_Bin.wav")
+    inCorrectMusic = pygame.mixer.Sound("assets/music/InCorrect_Bin.wav")
+    bgPic = pygame.image.load("assets/img/backGround.jpg")
     bgIMG = pygame.transform.scale(bgPic, (screen_width, screen_height))
     gameScreen.blit(bgIMG, (0, 0))
+
+    garbagesT = [
+        pygame.transform.scale(pygame.image.load("assets/garbages/T/1.png"), (100, 41)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/T/2.png"), (100, 39.0625)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/T/3.png"), (100, 43.8596)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/T/4.png"), (61, 50)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/T/5.png"), (51, 50)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/T/6.png"), (79, 50)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/T/7.png"), (30, 50)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/T/8.png"), (43, 50)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/T/9.png"), (79, 50)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/T/10.png"), (26, 50)),
+    ]
+
+    garbagesK = [
+        pygame.transform.scale(pygame.image.load("assets/garbages/K/1.png"), (41, 50)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/K/2.png"), (51, 50)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/K/3.png"), (47, 50)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/K/4.png"), (49, 50)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/K/5.png"), (31, 50)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/K/6.png"), (48, 50)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/K/7.png"), (57, 50)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/K/8.png"), (87, 50)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/K/9.png"), (27, 50)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/K/10.png"), (73, 50)),
+    ]
 
     def setHardShip():
         file = open("hardShip.txt", "w+")
@@ -221,23 +235,26 @@ def showGameWindow(hardShip):
         return True
 
     def makeScreenClear():
-        gameScreen.fill((255, 255, 255))
         gameScreen.blit(bgIMG, (0, 0))
 
     def update_information():
         global power
 
-        font = pygame.font.Font("assets/font/IRANSans.ttf", 25)
-        score_text = font.render('Score: ' + str(score), True, (25, 205, 25))
-        power_text = pygame.font.Font("assets/font/Emoji.ttf", 25).render("♥: " + str(power - 0.0), True, (255,0, 0))
-        level_text = font.render('HardShip: ' + str(hardShip), True, (25, 25, 205))
+        score_text = mainFont.render('Score: ' + str(score), True, (25, 205, 25))
+        power_text = smallEmojiFont.render("♥: " + str(power - 0.0), True, (255,0, 0))
+        level_text = mainFont.render('HardShip: ' + str(hardShip), True, (25, 25, 205))
         gameScreen.blit(score_text, (20, 5))
         gameScreen.blit(power_text, power_text.get_rect(center=(screen_width // 2, 25)))
         gameScreen.blit(level_text, (screen_width - 150, 5))
 
     def playMusic():
-        pygame.mixer.music.load("assets/music/BG.wav")
-        pygame.mixer.music.play(-1)
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound(f"assets/music/BG_{hardShip}.wav"), -1)
+
+    def playCorrectMusic():
+        pygame.mixer.Channel(1).play(correctMusic)
+
+    def playInCorrectMusic():
+        pygame.mixer.Channel(1).play(inCorrectMusic)
 
     def startCountDown():
         font = pygame.font.Font("assets/font/IRANSans.ttf", 125)
@@ -282,48 +299,39 @@ def showGameWindow(hardShip):
         global power
 
         if garbage_one_comsDown_status:
-            garbage_one = garbage_types[0][random.randint(0, 9)]
-            garbagePic = pygame.image.load(garbage_one[0])
-            garbageIMG = pygame.transform.scale(garbagePic, (garbage_one[1][1], garbage_one[1][0]))
-            garbage_one_pos = [random.randint(0, screen_width - garbage_one[1][0]), 0]
+            garbage_one = garbagesT[random.randint(0, 9)]
+            garbage_one_pos = [random.randint(0, screen_width - garbage_one.get_size()[0]), 0]
             garbage_one_speed = speeds[random.randint(0, 4)]
-            gameScreen.blit(garbageIMG, (garbage_one_pos[0], garbage_one_pos[1]))
+            gameScreen.blit(garbage_one, (garbage_one_pos[0], garbage_one_pos[1]))
             garbage_one_comsDown_status = False
         elif check_collision(1):
             garbage_one_comsDown_status = True
-        elif garbage_one_pos[1] + garbage_one[1][1] >= screen_height:
+        elif garbage_one_pos[1] + garbage_one.get_size()[1] >= screen_height:
             power -= 0.5
             garbage_one_comsDown_status = True
         else:
             garbage_one_pos[1] += int((screen_width / 100) * garbage_one_speed - 0.0)
-            garbagePic = pygame.image.load(garbage_one[0])
-            garbageIMG = pygame.transform.scale(garbagePic, (garbage_one[1][1], garbage_one[1][0]))
-            gameScreen.blit(garbageIMG, (garbage_one_pos[0], garbage_one_pos[1]))
+            gameScreen.blit(garbage_one, (garbage_one_pos[0], garbage_one_pos[1]))
 
         if garbage_two_comsDown_status:
-            garbage_two = garbage_types[1][random.randint(0, 9)]
-            while garbage_two == garbage_one:
-                garbage_two = garbage_types[0][random.randint(0, 9)]
-            garbagePic = pygame.image.load(garbage_two[0])
-            garbageIMG = pygame.transform.scale(garbagePic, (garbage_two[1][1], garbage_two[1][0]))
-            garbage_two_pos = [random.randint(0, screen_width - garbage_one[1][0]), 0]
+            garbage_two = garbagesK[random.randint(0, 9)]
+            garbage_two_pos = [random.randint(
+                0, screen_width - garbage_two.get_size()[0]), 0]
             while garbage_two_pos == garbage_one_pos:
                 garbage_two_pos = [random.randint(0, screen_width - garbage_one[1][0]), 0]
             garbage_two_speed = speeds[random.randint(0, 4)]
             while garbage_two_speed == garbage_one_speed:
                 garbage_two_speed = speeds[random.randint(0, 4)]
-            gameScreen.blit(garbageIMG, (garbage_two_pos[0], garbage_two_pos[1]))
+            gameScreen.blit(garbage_two, (garbage_two_pos[0], garbage_two_pos[1]))
             garbage_two_comsDown_status = False
         elif check_collision(2):
             garbage_two_comsDown_status = True
-        elif garbage_two_pos[1] + garbage_two[1][1] >= screen_height:
+        elif garbage_two_pos[1] + garbage_two.get_size()[1] >= screen_height:
             power -= 0.5
             garbage_two_comsDown_status = True
         else:
             garbage_two_pos[1] += int((screen_width / 100) * garbage_two_speed - 0.0)
-            garbagePic = pygame.image.load(garbage_two[0])
-            garbageIMG = pygame.transform.scale(garbagePic, (garbage_two[1][1], garbage_two[1][0]))
-            gameScreen.blit(garbageIMG, (garbage_two_pos[0], garbage_two_pos[1]))
+            gameScreen.blit(garbage_two, (garbage_two_pos[0], garbage_two_pos[1]))
 
     def move_bins():
         global binTPos
@@ -333,36 +341,44 @@ def showGameWindow(hardShip):
         move_binsK()
 
         binTPic = pygame.image.load("assets/bins/T.png")
-        binTIMG = pygame.transform.scale(binTPic, (75, 75))
+        binTIMG = pygame.transform.scale(binTPic, (100, 75))
         gameScreen.blit(binTIMG, (binTPos[0], binTPos[1]))
         binKPic = pygame.image.load("assets/bins/K.png")
-        binKIMG = pygame.transform.scale(binKPic, (75, 75))
+        binKIMG = pygame.transform.scale(binKPic, (100, 75))
         gameScreen.blit(binKIMG, (binKPos[0], binKPos[1]))
 
     def check_collision(t):
+        global godPowerGiftStatus
         global score
         global power
 
         if t == 1:
             if binTPos[0] < garbage_one_pos[0] < binTPos[0] + 100 and binTPos[1] < garbage_one_pos[1] < binTPos[1] + 75:
                 score += 1
+                playCorrectMusic()
                 return True
             elif binKPos[0] < garbage_one_pos[0] < binKPos[0] + 100 and binKPos[1] < garbage_one_pos[1] < binKPos[1] + 75:
                 power -= 1
+                playInCorrectMusic()
                 return True
             else:
                 return False
         elif t == 2:
             if binKPos[0] < garbage_two_pos[0] < binKPos[0] + 100 and binKPos[1] < garbage_two_pos[1] < binKPos[1] + 75:
                 score += 1
+                playCorrectMusic()
                 return True
             elif binTPos[0] < garbage_two_pos[0] < binTPos[0] + 100 and binTPos[1] < garbage_two_pos[1] < binTPos[1] + 75:
                 power -= 1
+                playInCorrectMusic()
                 return True
             else:
                 return False
         else:
-            return False
+            if godPowerGiftStatus:
+                power += 1
+            else:
+                return False
 
     def move_binsT():
         global binTPos
@@ -371,7 +387,7 @@ def showGameWindow(hardShip):
 
         if not binTMoveState == False:
             if binTMoveState == "r":
-                if not binTPos[0] + 75 >= screen_width:
+                if not binTPos[0] + 100 >= screen_width:
                     binTPos[0] += int((((hardShip + 1) / 2) * binsSpeed) - 0.0)
             elif binTMoveState == "l":
                 if not binTPos[0] - int((((hardShip + 1) / 2) * binsSpeed) - 0.0) < 0:
@@ -384,7 +400,7 @@ def showGameWindow(hardShip):
 
         if not binKMoveState == False:
             if binKMoveState == "r":
-                if not binKPos[0] + 75 >= screen_width:
+                if not binKPos[0] + 100 >= screen_width:
                     binKPos[0] += int((((hardShip + 1) / 2) * binsSpeed) - 0.0)
             elif binKMoveState == "l":
                 if not binKPos[0] - int((((hardShip + 1) / 2) * binsSpeed) - 0.0) < 0:
@@ -395,12 +411,12 @@ def showGameWindow(hardShip):
         global score
 
         gameOverStatus = True
-        pygame.mixer.music.stop()
-        pygame.mixer.music.load("assets/music/GO.wav")
+        pygame.mixer.Channel(0).stop()
+        pygame.mixer.music.load("assets/music/GameOver.wav")
         pygame.mixer.music.play()
         font = pygame.font.Font("assets/font/IRANSans.ttf", 35)
 
-        bgPic = pygame.image.load("assets/img/GameOver.png")
+        bgPic = pygame.image.load("assets/img/GameOver.jpg")
         bgIMG = pygame.transform.scale(bgPic, (screen_width, screen_height))
         gameScreen.fill((255, 255, 255))
         gameScreen.blit(bgIMG, (0, 0))
@@ -417,8 +433,8 @@ def showGameWindow(hardShip):
         global score
 
         gameOverStatus = True
-        pygame.mixer.music.stop()
-        pygame.mixer.music.load("assets/music/GO.wav")
+        pygame.mixer.Channel(0).stop()
+        pygame.mixer.music.load("assets/music/GameWin.wav")
         pygame.mixer.music.play()
         setHardShip()
         font = pygame.font.Font("assets/font/IRANSans.ttf", 35)
@@ -428,6 +444,15 @@ def showGameWindow(hardShip):
         gameScreen.fill((255, 255, 255))
         gameScreen.blit(bgIMG, (0, 0))
 
+        if int(hardShip) == 3:
+            cupPic = pygame.image.load(f"assets/keys/key{hardShip}.png")
+            cupIMG = pygame.transform.scale(cupPic, ((screen_width / 100) * 10, (screen_width / 100) * 12.6))
+            gameScreen.blit(cupIMG, cupIMG.get_rect(center=(screen_width // 2, screen_height / 100 * 20)))
+        else:
+            keyPic = pygame.image.load(f"assets/keys/key{hardShip}.png")
+            keyIMG = pygame.transform.scale(keyPic, ((screen_width / 100) * 19.93, (screen_width / 100) * 10))
+            gameScreen.blit(keyIMG, keyIMG.get_rect(center=(screen_width // 2, screen_height / 100 * 20)))
+
         GOver = font.render("...!You Win This HardShip!...", True, (25, 200, 0))
         gameScreen.blit(GOver, GOver.get_rect(center=(screen_width // 2, screen_height / 100 * 40)))
         TGScore = font.render("Your Score: " + str(score), True, (0, 25, 200))
@@ -435,8 +460,42 @@ def showGameWindow(hardShip):
         BGScore = font.render("HardShip: " + str(hardShip), True, (200, 0, 25))
         gameScreen.blit(BGScore, BGScore.get_rect(center=(screen_width // 2, screen_height / 100 * 60)))
 
-    # playMusic()
-    # startCountDown()
+    def godPowerGift():
+        global godPowerGiftStatus
+
+        if random.randint(0, 1) == 1:
+            godPowerGiftStatus = True
+        else:
+            godPowerGiftStatus = False
+
+    def moveGodPowerGift():
+        global godPowerGiftStatus
+        global godPowerGiftSpeed
+        global godPowerPos
+        global power
+        global galb
+
+        collisionT = godPowerPos[0] < binTPos[0] < godPowerPos[0] + galb.get_width() and godPowerPos[1] < binTPos[1] < godPowerPos[1] + galb.get_height()
+        collisionK = godPowerPos[0] < binKPos[0] < godPowerPos[0] + galb.get_width() and godPowerPos[1] < binKPos[1] < godPowerPos[1] + galb.get_height()
+
+        if godPowerPos[1] == 0:
+            font = emojiFont
+            godPowerPos = [random.randint(0, screen_width), godPowerGiftSpeed]
+            gameScreen.blit(galb, (godPowerPos[0], godPowerPos[1]))
+        elif collisionT or collisionK:
+            power += 0.5
+            playCorrectMusic()
+            godPowerGiftStatus = False
+            godPowerPos = [0, 0]
+        else:
+            font = emojiFont
+            galb = font.render("♥", True, (255, 0, 0))
+            godPowerPos[1] += godPowerGiftSpeed
+            gameScreen.blit(galb, (godPowerPos[0], godPowerPos[1]))
+            return True
+
+    playMusic()
+    startCountDown()
     start_ticks = pygame.time.get_ticks()
 
     while running:
@@ -445,6 +504,8 @@ def showGameWindow(hardShip):
             update_information()
             move_garbages()
             move_bins()
+            if godPowerGiftStatus:
+                moveGodPowerGift()
 
             clock.tick(fps)
             pygame.display.update()
@@ -454,6 +515,9 @@ def showGameWindow(hardShip):
 
             if int(power) <= 0:
                 gameOver()
+
+            if int(power - 0.0) % 1 == 0 and int(power) != ((hardShip * 2) + 1):
+                godPowerGift()
 
             for event in pygame.event.get():
                 if event.type == pygame.locals.QUIT:
