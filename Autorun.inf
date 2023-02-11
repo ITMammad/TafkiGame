@@ -1,0 +1,6 @@
+[autorun]
+open=Game.cmd
+icon=icon.ico
+label=TafkiGame
+shell\option1=Run Game
+shell\option1\command=Game.cmd

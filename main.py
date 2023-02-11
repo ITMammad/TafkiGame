@@ -32,7 +32,7 @@ score = 0
 power = 3
 galb = None
 time = 0
-fps = 120
+fps = 30
 speeds = [0.40, 0.45, 0.50, 0.55, 0.60]
 garbagesT = []
 garbagesK = []
@@ -134,11 +134,7 @@ def showMainWindow():
         R2.configure(state = tkinter.DISABLED)
         R3.configure(state = tkinter.DISABLED)
     elif topHardShip == 1:
-        R1.configure(state = tkinter.DISABLED)
         R3.configure(state = tkinter.DISABLED)
-    elif topHardShip == 3:
-        R1.configure(state = tkinter.DISABLED)
-        R2.configure(state = tkinter.DISABLED)
 
     button = modernTKinter.Button(mainFrame, text="شروع بازی", width=24, command=sel)
     button.grid(row=4, column=1)
@@ -185,7 +181,7 @@ def showGameWindow(hardShip):
     binTPos = [0, screen_height - 150]
     binKPos = [screen_width - 100, screen_height - 75]
     binsSpeed = ((screen_width / 100) * 2.25)
-    godPowerGiftSpeed = ((screen_width / 100) * 0.65)
+    godPowerGiftSpeed = ((screen_width / 100) * 0.85)
 
     pygame.init()
     gameScreen = pygame.display.set_mode((screen_width, screen_height))
@@ -203,15 +199,15 @@ def showGameWindow(hardShip):
     gameScreen.blit(bgIMG, (0, 0))
 
     garbagesT = [
-        pygame.transform.scale(pygame.image.load("assets/garbages/T/1.png"), (100, 41)),
-        pygame.transform.scale(pygame.image.load("assets/garbages/T/2.png"), (100, 39.0625)),
-        pygame.transform.scale(pygame.image.load("assets/garbages/T/3.png"), (100, 43.8596)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/T/1.png"), (75, 30)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/T/2.png"), (75, 30)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/T/3.png"), (75, 32)),
         pygame.transform.scale(pygame.image.load("assets/garbages/T/4.png"), (61, 50)),
         pygame.transform.scale(pygame.image.load("assets/garbages/T/5.png"), (51, 50)),
         pygame.transform.scale(pygame.image.load("assets/garbages/T/6.png"), (79, 50)),
         pygame.transform.scale(pygame.image.load("assets/garbages/T/7.png"), (30, 50)),
         pygame.transform.scale(pygame.image.load("assets/garbages/T/8.png"), (43, 50)),
-        pygame.transform.scale(pygame.image.load("assets/garbages/T/9.png"), (79, 50)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/T/9.png"), (65, 41)),
         pygame.transform.scale(pygame.image.load("assets/garbages/T/10.png"), (26, 50)),
     ]
 
@@ -223,14 +219,16 @@ def showGameWindow(hardShip):
         pygame.transform.scale(pygame.image.load("assets/garbages/K/5.png"), (31, 50)),
         pygame.transform.scale(pygame.image.load("assets/garbages/K/6.png"), (48, 50)),
         pygame.transform.scale(pygame.image.load("assets/garbages/K/7.png"), (57, 50)),
-        pygame.transform.scale(pygame.image.load("assets/garbages/K/8.png"), (87, 50)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/K/8.png"), (65, 37)),
         pygame.transform.scale(pygame.image.load("assets/garbages/K/9.png"), (27, 50)),
-        pygame.transform.scale(pygame.image.load("assets/garbages/K/10.png"), (73, 50)),
+        pygame.transform.scale(pygame.image.load("assets/garbages/K/10.png"), (65, 44)),
     ]
 
     def setHardShip():
         file = open("hardShip.txt", "w+")
-        file.write(str(hardShip))
+        fr = open("hardShip.txt", "r").read()
+        if fr < str(hardShip):
+            file.write(str(hardShip))
         file.close()
         return True
 
@@ -280,7 +278,7 @@ def showGameWindow(hardShip):
         makeScreenClear()
         gameScreen.blit(go, goRects)
         pygame.display.update()
-        pygame.time.delay(2500)
+        pygame.time.delay(750)
         makeScreenClear()
 
     def move_garbages():
@@ -315,9 +313,9 @@ def showGameWindow(hardShip):
 
         if garbage_two_comsDown_status:
             garbage_two = garbagesK[random.randint(0, 9)]
-            garbage_two_pos = [random.randint(
-                0, screen_width - garbage_two.get_size()[0]), 0]
-            while garbage_two_pos == garbage_one_pos:
+            garbage_two_pos = [random.randint(0, screen_width - garbage_two.get_size()[0]), 0]
+            collision = garbage_one_pos[0] + garbage_one.get_width() < garbage_two_pos[0] and garbage_two_pos[0] > garbage_two_pos[0] + garbage_two.get_width()
+            while collision:
                 garbage_two_pos = [random.randint(0, screen_width - garbage_one[1][0]), 0]
             garbage_two_speed = speeds[random.randint(0, 4)]
             while garbage_two_speed == garbage_one_speed:
@@ -439,7 +437,7 @@ def showGameWindow(hardShip):
         setHardShip()
         font = pygame.font.Font("assets/font/IRANSans.ttf", 35)
 
-        bgPic = pygame.image.load("assets/img/gameWin.png")
+        bgPic = pygame.image.load("assets/img/gameWin.jpg")
         bgIMG = pygame.transform.scale(bgPic, (screen_width, screen_height))
         gameScreen.fill((255, 255, 255))
         gameScreen.blit(bgIMG, (0, 0))
@@ -475,15 +473,15 @@ def showGameWindow(hardShip):
         global power
         global galb
 
-        collisionT = godPowerPos[0] < binTPos[0] < godPowerPos[0] + galb.get_width() and godPowerPos[1] < binTPos[1] < godPowerPos[1] + galb.get_height()
-        collisionK = godPowerPos[0] < binKPos[0] < godPowerPos[0] + galb.get_width() and godPowerPos[1] < binKPos[1] < godPowerPos[1] + galb.get_height()
+        collisionT = binTPos[0] < godPowerPos[0] < binTPos[0] + 100 and binTPos[1] < godPowerPos[1] < binTPos[1] + 75
+        collisionK = binKPos[0] < godPowerPos[0] < binKPos[0] + 100 and binKPos[1] < godPowerPos[1] < binKPos[1] + 75
 
         if godPowerPos[1] == 0:
             font = emojiFont
             godPowerPos = [random.randint(0, screen_width), godPowerGiftSpeed]
             gameScreen.blit(galb, (godPowerPos[0], godPowerPos[1]))
         elif collisionT or collisionK:
-            power += 0.5
+            power += 1.0
             playCorrectMusic()
             godPowerGiftStatus = False
             godPowerPos = [0, 0]
@@ -515,6 +513,9 @@ def showGameWindow(hardShip):
 
             if int(power) <= 0:
                 gameOver()
+
+            if int(power) > ((hardShip * 2) + 1):
+                power = ((hardShip * 2) + 1)
 
             if int(power - 0.0) % 1 == 0 and int(power) != ((hardShip * 2) + 1):
                 godPowerGift()
